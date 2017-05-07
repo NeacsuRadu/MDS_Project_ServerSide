@@ -1,4 +1,11 @@
+// ------------------------ COMMON PART -------------------------------- 
 
+var tcpClients = [];
+var webClients = [];
+
+// --------------------------------------------------------------------
+
+// ----------------------- HTTP SOCKETS SERVER --------------------------
 
 var app = require('express')();
 var http = require('http').Server(app);
@@ -29,11 +36,13 @@ http.listen(44000, function(){
   console.log('listening on *:3000');
 });
 
+
+// --------------------------- TCP SOCKETS SERVER ---------------------------------------
+
 // Load the TCP Library
 net = require('net');
 
 // Keep track of the chat clients
-var clients = [];
 
 // Start a TCP Server
 net.createServer(function (socket) {
@@ -42,7 +51,7 @@ net.createServer(function (socket) {
   socket.name = socket.remoteAddress + ":" + socket.remotePort 
 
   // Put this new client in the list
-  clients.push(socket);
+  tcpClients.push(socket);
 
   // Send a nice welcome message and announce
   socket.write("Welcome " + socket.name + "\n");
