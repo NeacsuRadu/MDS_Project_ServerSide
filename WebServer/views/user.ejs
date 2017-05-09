@@ -5,35 +5,169 @@
 		<%= name %>
 	<% } %>'s  home page </title>
 </head>
+
+<link rel="stylesheet"
+href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+crossorigin="anonymous">
+
+<style>
+
+#mesaje{
+  height: 500px;
+}
+#prieteni{
+  overflow-y: scroll;
+  height: 450px;
+}
+#tts{
+  width: 85%;
+  display: inline;
+}
+
+#send{
+  width: 10%;
+  margin-left: 3%
+}
+.lm{
+  height: 480px;
+  overflow-y: scroll;
+}
+
+#nume{
+  height: 3em;
+}
+
+.msgr{
+  float:right;
+}
+
+.msg{
+  width: 50%;
+}
+
+
+</style>
+
+
 <body>
 
+<p>
+welcome ,
+<% if (name.length > 0) { %>
+	<%= name %>
+<% } %> !
+</p>
 
 
-	<p>
-	welcome , 
-	<% if (name.length > 0) { %>
-		<%= name %>
-	<% } %> !
-	</p>
-	
-	<a href='logout'>Log Out! </a>
 
+<div id = "container">
+  <div class = "col-md-6">
+
+    <div class="panel panel-primary" id = "Chat">
+      <div class="panel-heading" id = "nume"></div>
+      <div class="panel-body" id = "mesaje">
+        <ul class="list-unstyled lm">
+        </ul>
+      </div>
+      <div class="panel-footer" id = "input">
+        <input type="text" id ="tts" class="form-control"/>
+        <button id="send" class="btn btn-info">Send</button>
+
+      </div>
+    </div>
+  </div>
+
+  <div class = "col-md-6">
+    <ul class="list-group">
+      <li class="list-group-item pb">New <span class="badge">12</span></li>
+      <li class="list-group-item pb">Deleted <span class="badge">5</span></li>
+      <li class="list-group-item pb">Warnings <span class="badge">3</span></li>
+    </ul>
+
+	   <a href='logout'>Log Out! </a>
+  </div>
+
+</div>
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
 $(function () {
     var socket = io();
-    
-/*$('form').submit(function(){
-      socket.emit('chat message', $('#m').val());
-      $('#m').val('');
-      return false;
+
+
+    socket.on("chat message", function(msg){
+
+      $('.lm').append('<li>' +
+                          '<div class="media">' +
+                          '  <div class="media-left media-top"> ' +
+                          '    <img src="http://placehold.it/24x24" class="media-object"> ' +
+                          '  </div> ' +
+                          '  <div class="media-body"> ' +
+                          '    <p class="msg">' + msg.message +'</p> ' +
+                          '  </div> ' +
+                          '</div> ' +
+                        '</li>');
     });
-    socket.on('chat message', function(msg){
-      $('#messages').append($('<li>').text(msg));
-    });*/
-  });
+
+    var selectedFriend;
+    var selectedFriendIndex = -1;
+
+
+    $('#send').click(function(){
+      console.log($("#tts").val().length);
+      if($('#tts').val().length == 0 || selectedFriend == undefined){
+        return;
+      }else{
+
+        $('.lm').append('<li>' +
+                            '<div class="media">' +
+                            '  <div class="media-body"> ' +
+                            '    <p class="msgr msg">' + $("#tts").val() +'</p> ' +
+                            '  </div> ' +
+                            '  <div class="media-right media-top"> ' +
+                            '    <img src="http://placehold.it/24x24" class="media-object" > ' +
+                            '  </div> ' +
+                            '</div> ' +
+                          '</li>');
+        socket.emit("chat message", {to : $('#nume').html(),
+                                     from : 'x2009',
+                                     message : $('#tts').val()});
+        $("#tts").val("");
+      }
+    });
+
+    $('.pb').click(function (){
+        var clicked = $(this);
+        var nume = $('#nume');
+        nume.html(clicked.html());
+
+
+
+        if(selectedFriend != undefined && selectedFriendIndex == $("li.pb").index(clicked)){
+          selectedFriend.removeClass('active');
+          selectedFriend = undefined;
+          selectedFriendIndex = -1;
+          nume.html("");
+          return;
+        }
+        clicked.addClass('active');
+
+
+        if(selectedFriend == undefined){
+          selectedFriend = clicked;
+          selectedFriendIndex = $("li.pb").index(clicked);
+        }else{
+          selectedFriend.removeClass('active');
+          selectedFriend = clicked;
+          selectedFriendIndex = $("li.pb").index(clicked);
+
+        }
+    });
+
+
+});
 </script>
 
-</html> 
+</html>

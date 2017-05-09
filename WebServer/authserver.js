@@ -13,16 +13,19 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+var connected = {};
 
 io.on('connection', function(socket){
 
-  console.log('avem un sobolan');
-
+  user = connected[socket.handshake.headers.cookie.substr(16,32)];
+  user.socket = socket;
+  
   socket.on('chat message', function(msg){
     io.emit('chat message', msg);
   });
 
   socket.on('disconnect', function(){
+    delete connected[socket.handshake.headers.cookie.substr(16,32)];
     console.log('a iesit un sobolan');
   });
 
@@ -95,6 +98,8 @@ passport.deserializeUser(function (userId, done) {
 });
 
 app.get('/', authenticatedOrNot, function(req, res) {
+  connected[req.sessionID] = req.user;
+  console.log(req.sessionID + '\n' + req.sessionID.length);
   res.render('user.ejs', {name : req.user.username});
 });
 
