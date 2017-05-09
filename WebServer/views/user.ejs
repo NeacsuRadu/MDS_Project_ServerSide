@@ -1,0 +1,39 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<title>	<% if (name.length > 0) { %>
+		<%= name %>
+	<% } %>'s  home page </title>
+</head>
+<body>
+
+
+
+	<p>
+	welcome , 
+	<% if (name.length > 0) { %>
+		<%= name %>
+	<% } %> !
+	</p>
+	
+	<a href='logout'>Log Out! </a>
+
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+$(function () {
+    var socket = io();
+    
+/*$('form').submit(function(){
+      socket.emit('chat message', $('#m').val());
+      $('#m').val('');
+      return false;
+    });
+    socket.on('chat message', function(msg){
+      $('#messages').append($('<li>').text(msg));
+    });*/
+  });
+</script>
+
+</html> 

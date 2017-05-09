@@ -1,0 +1,38 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<title>	<% if (message.length > 0) { %>
+		<%= message %>
+	<% }else{ %>
+		Login
+	<%  }%>
+ </title>
+</head>
+<body>
+
+	
+	<b> 
+	<% if (message.length > 0) { %>
+		Incorrect username and/or password <br>
+		<%= message %>
+		<br>
+	<% } %> 
+	</b>
+
+	<form action = "/login" method = "post"> 
+	<div> 
+	 <label>Username:</label> 
+	 <input type = "text" name = "username"/> 
+	</div>
+	<div>
+	 <label>Password:</label>
+	 <input type = "password" name = "password"/>
+	</div>
+	<div>
+	 <input type = "submit" value = "Log In" />
+	</div> 
+	</form>
+
+
+</body>
+</html> 

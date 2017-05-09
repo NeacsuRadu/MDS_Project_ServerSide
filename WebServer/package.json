@@ -1,0 +1,17 @@
+{
+  "name" : "auth",
+  "description" : "AUthentificator using passport",
+  "version" : "0.0.1",
+  "private" : true,
+  "dependencies" : {
+    "socket.io": "^1.7.3",
+    "ejs" : "~0.8.5", 
+    "body-parser" : "1.x",
+    "cookie-parser" : "1.x",
+    "express" : "4.x",
+    "express-flash" : "0.x",
+    "express-session" : "1.x",
+    "passport" : "0.3.x",
+    "passport-local" : "1.x"
+  }
+}
