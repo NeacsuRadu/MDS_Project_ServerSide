@@ -9,6 +9,27 @@ var express = require('express'),
 
 var app = express();
 
+
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+
+io.on('connection', function(socket){
+
+  console.log('avem un sobolan');
+
+  socket.on('chat message', function(msg){
+    io.emit('chat message', msg);
+  });
+
+  socket.on('disconnect', function(){
+    console.log('a iesit un sobolan');
+  });
+
+
+});
+
+
 app.use(flash());
 app.use(session({
   secret : "very_secret_much_secure",
