@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "async": "^2.4.0",
     "body-parser": "1.x",
     "cookie-parser": "1.x",
     "ejs": "~0.8.5",

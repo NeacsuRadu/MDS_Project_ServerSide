@@ -2,12 +2,55 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     session = require('express-session'),
     passport = require('passport'),
+    mongodb = require('mongodb').MongoClient,
     LocalStrategy = require('passport-local').Strategy,
     bodyParser = require('body-parser'),
-    flash = require('express-flash');
+    flash = require('express-flash'),
+    usersManager = require('./dbscript/mongodbmanager.js').usersManager,
+    messagesManager = require('./dbscript/mongodbmanager.js').messagesManager,
+    async = require('async');
+
+
+var url = 'mongodb://localhost:27017/test';
+
+var usersConnected = {};
+
+var db;
+var users;
+var messages;
 
 
 var app = express();
+
+//---------------------------------------database waterfall --------------------
+
+async.waterfall([
+  (callback)=>{
+    mongodb.connect(url, function(err, response){
+    if(err){
+      console.log("Avem o eroare:");
+      console.log(err);
+      return;
+    }
+
+    db = response;
+
+
+    messages = db.collection('messages');
+    users = db.collection('users');
+    messagesManager.setMessages(messages);
+    usersManager.setUsers(users)
+        callback();
+  });
+},
+  (callback)=>{
+
+  }
+],function(err,res){
+
+});
+
+//---------------------------------------database waterfall --------------------
 
 
 var http = require('http').Server(app);
@@ -15,11 +58,13 @@ var io = require('socket.io')(http);
 
 var connected = {};
 
+
+//---------------------socket.io stuff -----------------------------------------
 io.on('connection', function(socket){
 
   user = connected[socket.handshake.headers.cookie.substr(16,32)];
   user.socket = socket;
-  
+
   socket.on('chat message', function(msg){
     io.emit('chat message', msg);
   });
@@ -31,7 +76,9 @@ io.on('connection', function(socket){
 
 
 });
+//---------------------socket.io stuff -----------------------------------------
 
+//------------------------use and set for express-------------------------------
 
 app.use(flash());
 app.use(session({
@@ -51,56 +98,71 @@ app.use(bodyParser.json());
 
 
 app.set('view engine', 'ejs');
+//------------------------use and set for express-------------------------------
 
 
-
+//-----------------------passport stuff-----------------------------------------
 // 1. secure user name and pass
 
-var users = {
-  "id123" : {id : 123, username : "x2009", password : "fuckriot12"},
-  "id1" : {id : 1, username : "admin", password : "admin"}
-};
+//done by database now :D
 
 // 2. configure passport-local to validate an incoming user and pw
 
 passport.use(new LocalStrategy(
   function(username, password, done){
-    for(userid in users){
-      var user = users[userid];
-      if(user.username == username){
-        if(user.password == password){
-          return done(null, user);
+
+      var user ;
+      usersManager.findUser({_id: username},function(err,res){
+        user = res[0];
+
+        if(user == undefined){
+            return done(null, false,{message : "Incorrect credentials." });
+        }else{
+
+        if(user._id == username){
+          if(user.pw == password){
+            usersConnected[username] = user;
+            return done(null, user);
+          }
         }
-      }
-    }
-      return done(null, false,{message : "Incorrect credentials." });
+
+        }
+
+      });
+
+
   }
 ));
 
 // 3. serialize users
 
 passport.serializeUser(function (user, done){
-  if(users["id" + user.id]){
-    done(null, "id" + user.id);
+
+  if(usersConnected[user._id]){
+    done(null, user._id);
   }else{
-    done(new Error("CANT_SERIALIZE_THIS_USER"));
-  }
+
+      done(new Error("CANT_SERIALIZE_THIS_USER"));
+    }
 });
 
 // 4. deserialize users
 
 passport.deserializeUser(function (userId, done) {
-  if(users[userId]){
-    done(null, users[userId]);
+  if(usersConnected[userId]){
+    done(null, usersConnected[userId]);
   }else{
     done(new Error("that user does not exist"));
   }
 });
+//-----------------------passport stuff-----------------------------------------
 
+
+//-----------------------express requests       --------------------------------
 app.get('/', authenticatedOrNot, function(req, res) {
-  connected[req.sessionID] = req.user;
+  usersConnected[req.user._id].session = req.sessionID;
   console.log(req.sessionID + '\n' + req.sessionID.length);
-  res.render('user.ejs', {name : req.user.username});
+  res.render('user.ejs', {name : req.user._id});
 });
 
 /*
@@ -116,6 +178,29 @@ app.get("/login", function (req, res){
 });
 */
 
+app.get("/register", function(req,res){
+    res.sendFile(__dirname +"/views/register.html");
+});
+
+app.post("/register",function(req,res){
+    var us = {};
+    us.name = req.body.username;
+    us.pw = req.body.password;
+    usersManager.checkName(us.name,function(err,resp){
+      if(resp.found == 0){
+        usersManager.addUser(us,function(err,resp){
+          if(err){
+            console.log(err);
+          }else{
+            res.redirect('/');
+          }
+        });
+      }else{
+        res.redirect('/register');
+      }
+    });
+
+});
 
 app.post("/login", passport.authenticate('local',{
     successRedirect: "/",
@@ -124,14 +209,27 @@ app.post("/login", passport.authenticate('local',{
     failureFlash : true
 }));
 
+app.get("/ejs.js", function(req,res){
+  res.sendFile(__dirname +"/scripts/ejs.min.js");
+});
 
+app.get("/login.js",function(req,res){
+  res.sendFile(__dirname +"/scripts/login.js");
+});
+
+app.get("/login.html",function(req,res){
+  res.sendFile(__dirname +"/views/login.html");
+});
 
 app.get("/logout", function(req, res){
     req.logout();
     res.redirect("/");
 });
+//-----------------------express requests       --------------------------------
 
 
+
+//-----------------------helper functions --------------------------------------
 function authenticatedOrNot(req, res, next){
   if(req.isAuthenticated()){
     next();
@@ -145,5 +243,6 @@ function authenticatedOrNot(req, res, next){
     res.render('login.ejs',{message : form});
   }
 }
+//-----------------------helper functions --------------------------------------
 
 http.listen(8080);

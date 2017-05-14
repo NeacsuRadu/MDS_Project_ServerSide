@@ -1,22 +1,11 @@
 var mongodb = require('mongodb').MongoClient,
     assert = require('assert');
 
-var url = 'mongodb://localhost:27017/test';
 
-var db;
-var users;
-var messages;
+var usersManager = function(){};
+var messagesManager = function(){};
+var initializer = function(){};
 
-mongodb.connect(url, function(err, response){
-  if(err){
-    console.log("Avem o eroare:");
-    console.log(err);
-    return;
-  }
-  db = response;
-
-
-   messages = db.collection('messages');
 
    // messages are stored as:
 
@@ -39,8 +28,6 @@ mongodb.connect(url, function(err, response){
 
 
 
-   users = db.collection('users');
-
 
     // users are stored as:
 
@@ -59,11 +46,11 @@ mongodb.connect(url, function(err, response){
      }
     */
 
-    /*
 
-    messages.insertOne({to : "da", from : "nu", message : "abc" , date : new Date("October 13, 2014 11:13:01")});
+/*
+    messages.insertOne({to : "nu", from : "da", message : "abc" , date : new Date("October 13, 2014 11:13:01")});
 
-        messages.insertOne({to : "da", from : "nu", message : "abc" , date : new Date("October 13, 2014 11:13:02")});
+    messages.insertOne({to : "nu", from : "da", message : "abc" , date : new Date("October 13, 2014 11:13:02")});
 
             messages.insertOne({to : "da", from : "nu", message : "abc" , date : new Date("October 13, 2014 11:13:03")});
 
@@ -85,54 +72,57 @@ mongodb.connect(url, function(err, response){
       console.log(res);
     });
 
-*/
 
-  addMessages([{to : "da", from : "nu", message : "abc" , date : new Date("October 13, 2014 11:13:01")},{to : "da", from : "nu", message : "abc" , date : new Date("October 13, 2014 11:13:01")},{to : "da", from : "nu", message : "abc" , date : new Date("October 13, 2014 11:13:01")}],
-function(err,res){
-  if(err){
-    console.log(err);
-  }else{
-    console.log(res);
-  }
+var um = new usersManager();
+var mm = new messagesManager();
+
+mm.getMessages({to : "da",from: "nu"},function(err,res){
+  console.log(res);
 });
 
 messages.find({}).toArray(function(err,res){
   console.log("descrescator: ")
   console.log(res);
 });
+*/
 
-});
+usersManager.prototype.setUsers = function(users){
+  this.users = users;
+}
 
-var usersManager = funtion(){};
-var messagesManager = function(){};
+
+messagesManager.prototype.setMessages = function(messages){
+  this.messages = messages;
+}
 
 usersManager.prototype.checkName = function(name, callback){
-  users.find({_id : name}).toArray(function(err,res){
+  this.users.find({_id : name}).toArray(function(err,res){
       if(err){
-        callback(err);
-        return;
+        callback(err,{found : 0});
       }else{
         if(res[0]){
-          callback({found : 1});
+          callback(err,{found : 1});
         }else{
-          callback({found : 0});
+          callback(err,{found : 0});
         }
       }
   });
 }
 
 usersManager.prototype.addUser = function(user, callback){
-  users.insertOne(user, function(err, res){
-    if(err){
-      callback(err,res);
-    }else{
-      callback(err,res);
-    }
-  });
+  this.users.insertOne({_id : user.name,
+                    pw : user.pw,
+                    friends : []}, function(err, res){
+                                      if(err){
+                                        callback(err,res);
+                                      }else{
+                                        callback(err,res);
+                                      }
+                                    });
 }
 
 usersManager.prototype.findUser = function(user, callback){
-  users.find(user).toArray( function(err, res){
+  this.users.find(user).toArray( function(err, res){
     if(err){
       callback(err,res);
     }else{
@@ -151,27 +141,34 @@ usersManager.prototype.findUser = function(user, callback){
 
 messagesManager.prototype.getNthSetOfMessages = function(antet,nth,callback){
   if(nth < 0  || nth == undefined, isNaN(nth)){
-    callback({error : "bad_nth", message: "bad set index provided (undefined , < 0 , or NaN)"},[]);
+    callback({error : "bad_nth",
+              message: "bad set index provided (undefined , < 0 , or NaN)"
+              },[]);
   }
-  messages.find(antet).skip(nth*30).sort({date : -1}).limit(30).toArray( function(err, res){
-    if(err){
-      callback(err,res);
-    }else{
-      callback(err,res);
-    }
-  });
+  this.messages.find({$or : [antet,{to : antet.from, from: antet.to}]})
+          .skip(nth*30).sort({date : -1})
+          .limit(30)
+          .toArray( function(err, res){
+                    if(err){
+                      callback(err,res);
+                    }else{
+                      callback(err,res);
+                    }
+                  });
 }
 
 messagesManager.prototype.getMessages = function(antet,callback){
-  getNthSetOfMessages(antet,0,callback);
+  this.getNthSetOfMessages(antet,0,callback);
 }
 
 messagesManager.prototype.addMessages = function(messagesToAdd, callback){
-  messages.insertMany(messagesToAdd,function(err, res){
+  this.messages.insertMany(messagesToAdd,function(err, res){
     if(err){
       callback(err,res);
     }if(messagesToAdd.length != res.insertedCount){
-      callback({error:'could_not_insert', message: "could not insert every item. Maybe the database is full",res})
+      callback({error:'could_not_insert',
+                message: "could not insert every item. Maybe the database is full"
+                },res);
     }else{
       callback(err,res);
     }
@@ -181,3 +178,4 @@ messagesManager.prototype.addMessages = function(messagesToAdd, callback){
 
 exports.usersManager = new usersManager();
 exports.messagesManager = new messagesManager();
+exports.initializer = new initializer();

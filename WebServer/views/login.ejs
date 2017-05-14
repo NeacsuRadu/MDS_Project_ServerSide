@@ -7,22 +7,27 @@
 		Login
 	<%  }%>
  </title>
+
+<script src="ejs.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script src="login.js"></script>
+
 </head>
 <body>
 
-	
-	<b> 
+
+	<b>
 	<% if (message.length > 0) { %>
 		Incorrect username and/or password <br>
 		<%= message %>
 		<br>
-	<% } %> 
+	<% } %>
 	</b>
 
-	<form action = "/login" method = "post"> 
-	<div> 
-	 <label>Username:</label> 
-	 <input type = "text" name = "username"/> 
+	<form action = "/login" method = "post">
+	<div>
+	 <label>Username:</label>
+	 <input type = "text" name = "username"/>
 	</div>
 	<div>
 	 <label>Password:</label>
@@ -30,9 +35,11 @@
 	</div>
 	<div>
 	 <input type = "submit" value = "Log In" />
-	</div> 
+	</div>
 	</form>
 
+<a href = "register">Register</a>
 
 </body>
-</html> 
+
+</html>
