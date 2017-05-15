@@ -42,7 +42,7 @@ var initializer = function(){};
          _id     : --- string  (this is the name of the user!!! -- it is used as
                                 id for simplicity and for the unique constraint)
          pw      : --- string  (the password)
-         friends : --- array   (string reprezenting friends)
+         friends : --- object!   (string reprezenting friends)
      }
     */
 
@@ -109,6 +109,15 @@ usersManager.prototype.checkName = function(name, callback){
   });
 }
 
+usersManager.prototype.makeFriends = function(user,name,callback){
+
+  this.users.update({_id : user},{$addToSet : {friends : name}},(err,res) =>{
+    this.users.update({_id : name},{$addToSet : {friends : user}},function(err,res){
+      callback(err,res);
+    });
+  });
+}
+
 usersManager.prototype.addUser = function(user, callback){
   this.users.insertOne({_id : user.name,
                     pw : user.pw,
@@ -146,7 +155,7 @@ messagesManager.prototype.getNthSetOfMessages = function(antet,nth,callback){
               },[]);
   }
   this.messages.find({$or : [antet,{to : antet.from, from: antet.to}]})
-          .skip(nth*30).sort({date : -1})
+          .skip(nth*30).sort({date : 1})
           .limit(30)
           .toArray( function(err, res){
                     if(err){

@@ -62,15 +62,35 @@ var connected = {};
 //---------------------socket.io stuff -----------------------------------------
 io.on('connection', function(socket){
 
-  user = connected[socket.handshake.headers.cookie.substr(16,32)];
-  user.socket = socket;
+  console.log(socket);
+
+  var index = socket.handshake.headers.cookie.indexOf('connect.sid=s%3A');
+  index += 16;
+
+  connected[socket.handshake.headers.cookie.substr(index,32)].socket = socket;
+
+  user = connected[socket.handshake.headers.cookie.substr(index,32)];
+  console.log(socket.handshake.headers.cookie.substr(index,32));
+
+
 
   socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
+
+    messagesManager.addMessages([msg],function(err,res){
+
+      for(var id in connected){
+
+        if(connected[id]._id == msg.to){
+          connected[id].socket.emit("chat message",msg);
+
+        }
+      }
+    });
+
   });
 
   socket.on('disconnect', function(){
-    delete connected[socket.handshake.headers.cookie.substr(16,32)];
+    //delete connected[socket.handshake.headers.cookie.substr(16,32)];
     console.log('a iesit un sobolan');
   });
 
@@ -161,8 +181,9 @@ passport.deserializeUser(function (userId, done) {
 //-----------------------express requests       --------------------------------
 app.get('/', authenticatedOrNot, function(req, res) {
   usersConnected[req.user._id].session = req.sessionID;
+  connected[req.sessionID] = req.user;
   console.log(req.sessionID + '\n' + req.sessionID.length);
-  res.render('user.ejs', {name : req.user._id});
+  res.render(__dirname+'/views/user.ejs', {name : req.user._id});
 });
 
 /*
@@ -177,6 +198,49 @@ app.get("/login", function (req, res){
 
 });
 */
+
+app.get("/messages/:nume",authenticatedOrNot,function(req,resp){
+  var nume = req.params.nume;
+  var user = connected[req.sessionID]._id;
+  console.log(nume);
+  console.log(user);
+  messagesManager.getMessages({to: user,from : nume}, function(err,res){
+    console.log(res);
+    resp.send(res);
+  });
+});
+
+app.get("/friends",authenticatedOrNot,function(req,resp){
+  var user = connected[req.sessionID]._id;
+  usersManager.findUser({_id:user},function(err,res){
+    console.log("res:");
+    console.log(res);
+    resp.send(res[0].friends);
+  });
+});
+
+app.get("/user/:nume",function(req,resp){
+  var name =  req.params.nume;
+  usersManager.checkName(name,function(err,res){
+    if(res.found == 0){
+      resp.send({succ : false});
+    }else{
+      usersManager.makeFriends(connected[req.sessionID]._id,name,function(err,res){
+        if(err){
+          console.log(err);
+        }else{
+          usersManager.findUser({_id : connected[req.sessionID]._id}, function(err,res){
+            console.log(res);
+            usersManager.findUser({_id : name},function(err,res){
+              console.log(res);
+            });
+          });
+        }
+      })
+      resp.send({succ : true});
+    }
+  });
+});
 
 app.get("/register", function(req,res){
     res.sendFile(__dirname +"/views/register.html");
@@ -240,7 +304,7 @@ function authenticatedOrNot(req, res, next){
       form = error[0] + form;
     }
 
-    res.render('login.ejs',{message : form});
+    res.render(__dirname +"/views/login.ejs",{m : form});
   }
 }
 //-----------------------helper functions --------------------------------------

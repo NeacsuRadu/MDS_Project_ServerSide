@@ -54,9 +54,8 @@ crossorigin="anonymous">
 
 <p>
 welcome ,
-<% if (name.length > 0) { %>
-	<%= name %>
-<% } %> !
+<b id= "user"><% if (name.length > 0) { %><%= name%><% } %></b>!
+
 </p>
 
 
@@ -79,10 +78,16 @@ welcome ,
   </div>
 
   <div class = "col-md-6">
-    <ul class="list-group">
-      <li class="list-group-item pb">New <span class="badge">12</span></li>
-      <li class="list-group-item pb">Deleted <span class="badge">5</span></li>
-      <li class="list-group-item pb">Warnings <span class="badge">3</span></li>
+
+    <div class="input-group">
+      <input type="text" class="form-control searchf" placeholder="Search for an user...">
+      <span class="input-group-btn">
+        <button class="btn btn-secondary searchb" type="button">Go!</button>
+      </span>
+    </div>
+    <br>
+
+    <ul class="list-group lp">
     </ul>
 
 	   <a href='logout'>Log Out! </a>
@@ -96,6 +101,20 @@ welcome ,
 $(function () {
     var socket = io();
 
+    var messagesWith = {};
+
+    var user = $('#user').html();
+
+    var friends;
+
+    $.get('/friends',function(data){
+      friends = data;
+      for(var i = 0; i < friends.length; i++){
+        $('.lp').append('<li class="list-group-item pb">' + friends[i] +'</li>');
+      }
+    });
+
+    console.log(user+"dadaa");
 
     socket.on("chat message", function(msg){
 
@@ -132,18 +151,81 @@ $(function () {
                             '</div> ' +
                           '</li>');
         socket.emit("chat message", {to : $('#nume').html(),
-                                     from : 'x2009',
-                                     message : $('#tts').val()});
+                                     from : user,
+                                     message : $('#tts').val(),
+                                     date : new Date()});
         $("#tts").val("");
       }
     });
 
-    $('.pb').click(function (){
+    $('.lp').on("click",'.pb',function (){
+
+
         var clicked = $(this);
         var nume = $('#nume');
         nume.html(clicked.html());
 
+        $(".lm").empty();
 
+        if(messagesWith[clicked.html()] == undefined){
+          $.get('/messages/'+clicked.html(),function(data){
+            messagesWith[clicked.html()] = data;
+            console.log(data);
+
+            for(var i = 0; i < data.length; i++){
+              if(data[i].from == user){
+                $('.lm').append('<li>' +
+                                    '<div class="media">' +
+                                    '  <div class="media-body"> ' +
+                                    '    <p class="msgr msg">' + data[i].message +'</p> ' +
+                                    '  </div> ' +
+                                    '  <div class="media-right media-top"> ' +
+                                    '    <img src="http://placehold.it/24x24" class="media-object" > ' +
+                                    '  </div> ' +
+                                    '</div> ' +
+                                  '</li>');
+              }else{
+                $('.lm').append('<li>' +
+                                    '<div class="media">' +
+                                    '  <div class="media-left media-top"> ' +
+                                    '    <img src="http://placehold.it/24x24" class="media-object"> ' +
+                                    '  </div> ' +
+                                    '  <div class="media-body"> ' +
+                                    '    <p class="msg">' + data[i].message +'</p> ' +
+                                    '  </div> ' +
+                                    '</div> ' +
+                                  '</li>');
+              }
+            }
+          });
+        }else{
+          var data = messagesWith[clicked.html()];
+          for(var i = 0; i < data.length; i++){
+            if(data[i].from == user){
+              $('.lm').append('<li>' +
+                                  '<div class="media">' +
+                                  '  <div class="media-body"> ' +
+                                  '    <p class="msgr msg">' + data[i].message +'</p> ' +
+                                  '  </div> ' +
+                                  '  <div class="media-right media-top"> ' +
+                                  '    <img src="http://placehold.it/24x24" class="media-object" > ' +
+                                  '  </div> ' +
+                                  '</div> ' +
+                                '</li>');
+            }else{
+              $('.lm').append('<li>' +
+                                  '<div class="media">' +
+                                  '  <div class="media-left media-top"> ' +
+                                  '    <img src="http://placehold.it/24x24" class="media-object"> ' +
+                                  '  </div> ' +
+                                  '  <div class="media-body"> ' +
+                                  '    <p class="msg">' + data[i].message +'</p> ' +
+                                  '  </div> ' +
+                                  '</div> ' +
+                                '</li>');
+            }
+          }
+        }
 
         if(selectedFriend != undefined && selectedFriendIndex == $("li.pb").index(clicked)){
           selectedFriend.removeClass('active');
@@ -164,6 +246,18 @@ $(function () {
           selectedFriendIndex = $("li.pb").index(clicked);
 
         }
+    });
+
+    $('.searchb').click(function(){
+      var name = $('.searchf').val();
+      $.get('/user/' + name, function(res){
+        if(res.succ == true){
+          $('.lp').append('<li class="list-group-item pb">' + name +'</li>');
+        }else{
+          alert('no such user!');
+        }
+      });
+
     });
 
 

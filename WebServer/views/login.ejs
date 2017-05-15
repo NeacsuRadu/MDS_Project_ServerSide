@@ -1,25 +1,23 @@
  <!DOCTYPE html>
 <html>
 <head>
-<title>	<% if (message.length > 0) { %>
-		<%= message %>
+<title>	<% if (m.length > 0) { %>
+		<%= me %>
 	<% }else{ %>
 		Login
 	<%  }%>
  </title>
 
-<script src="ejs.js"></script>
-<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-<script src="login.js"></script>
+
 
 </head>
 <body>
 
 
 	<b>
-	<% if (message.length > 0) { %>
+	<% if (m.length > 0) { %>
 		Incorrect username and/or password <br>
-		<%= message %>
+		<%= m %>
 		<br>
 	<% } %>
 	</b>
