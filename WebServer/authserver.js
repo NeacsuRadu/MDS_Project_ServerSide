@@ -8,7 +8,9 @@ var express = require('express'),
     flash = require('express-flash'),
     usersManager = require('./dbscript/mongodbmanager.js').usersManager,
     messagesManager = require('./dbscript/mongodbmanager.js').messagesManager,
-    async = require('async');
+    async = require('async'),
+    fileUploader = require('express-fileupload'),
+    fs = require('fs');
 
 
 var url = 'mongodb://localhost:27017/test';
@@ -115,7 +117,7 @@ app.use(passport.session());
 
 app.use(bodyParser.urlencoded({ extended : false }));
 app.use(bodyParser.json());
-
+app.use(fileUploader());
 
 app.set('view engine', 'ejs');
 //------------------------use and set for express-------------------------------
@@ -213,9 +215,10 @@ app.get("/messages/:nume",authenticatedOrNot,function(req,resp){
 app.get("/friends",authenticatedOrNot,function(req,resp){
   var user = connected[req.sessionID]._id;
   usersManager.findUser({_id:user},function(err,res){
-    console.log("res:");
-    console.log(res);
-    resp.send(res[0].friends);
+
+    var sends = res[0].friends;
+    console.log(sends);
+    resp.send(sends);
   });
 });
 
@@ -246,18 +249,53 @@ app.get("/register", function(req,res){
     res.sendFile(__dirname +"/views/register.html");
 });
 
+
+app.get("/pictures/:name",function(req,res){
+
+
+res.sendFile(__dirname + '/pictures/' + req.params.name );
+
+
+});
+
 app.post("/register",function(req,res){
     var us = {};
     us.name = req.body.username;
     us.pw = req.body.password;
+
+    console.log(req.files);
+
+    if (req.files){
+
+    // The name of the input field (i.e. "image") is used to retrieve the uploaded file
+        var sampleFile = req.files.image;
+        var extI = sampleFile.mimetype.indexOf('/') + 1;
+        var ext = sampleFile.mimetype.substr(extI);
+
+        us.picture = __dirname +'/pictures/' + us.name + ".png" ;
+        console.log("ajung");
+      fs.writeFile(__dirname +'/pictures/' + us.name + "."+ext ,sampleFile.data,'binary',req.files.data,function(err,res){
+        if(err){
+          console.log("error write");
+        }
+      })
+
+
+      }
+
+
+
+
     usersManager.checkName(us.name,function(err,resp){
       if(resp.found == 0){
         usersManager.addUser(us,function(err,resp){
           if(err){
             console.log(err);
           }else{
+            console.log(us);
             res.redirect('/');
           }
+
         });
       }else{
         res.redirect('/register');
@@ -309,4 +347,4 @@ function authenticatedOrNot(req, res, next){
 }
 //-----------------------helper functions --------------------------------------
 
-http.listen(8080);
+http.listen(9090);

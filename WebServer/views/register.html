@@ -7,18 +7,59 @@
 </head>
 <body>
 
-	<form action = "/register" method = "post">
-	<div>
-	 <label>Username:</label>
-	 <input type = "text" name = "username"/>
-	</div>
-	<div>
-	 <label>Password:</label>
-	 <input type = "password" name = "password"/>
-	</div>
-	<div>
+	<form ref='uploadForm'
+		 id='uploadForm'
+		 action='/register'
+		 method='post'
+		 encType="multipart/form-data">
+	 <label>Username:</label><br>
+	 <input type = "text"  id = "username" name = "username"/><br>
+	 <label>Password:</label><br>
+	 <input type = "password"  id = "password" name = "password"/><br>
+	 <label>Picture:</label><p id = "fin"></p>
+	 <input type = "file"  id = "image" name = "image"/><br>
+
 	 <input type = "submit" value = "register" />
-	</div>
+
 	</form>
+
 </body>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+
+
+
+$(function () {
+	var _URL = window.URL || window.webkitURL;
+	var ok = false;
+	$("#image").change(()=>{
+		var image;
+		var fileInput = $(this).find("input[type=file]")[0],
+			 file = fileInput.files && fileInput.files[0];
+		if (file) {
+
+				image = new Image();
+
+				image.onload = function() {
+
+						if(this.width > 800 || this.height > 500){
+							$('#fin').html("Image too large");
+						}else if(this.size > 1024 * 1024){
+							$('#fin').html('Image too big');
+						}else{
+							$('#fin').html('');
+						}
+				};
+
+				image.src = _URL.createObjectURL(file);
+
+
+		}
+	});
+});
+
+
+</script>
+
+
 </html>

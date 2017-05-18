@@ -35,7 +35,7 @@ crossorigin="anonymous">
 }
 
 #nume{
-  height: 3em;
+  height: 4em;
 }
 
 .msgr{
@@ -104,24 +104,53 @@ $(function () {
     var messagesWith = {};
 
     var user = $('#user').html();
+    var userImage ;
 
-    var friends;
+    var friends = {};
 
     $.get('/friends',function(data){
-      friends = data;
-      for(var i = 0; i < friends.length; i++){
-        $('.lp').append('<li class="list-group-item pb">' + friends[i] +'</li>');
+      var fr = data;
+
+
+
+      var i;
+      //data[0] = the user (needed for image)
+      for(i = 0; i < fr.length; i++){
+        var src = fr[i];
+        friends[fr[i]] = {};
+        friends[fr[i]].src = fr[i];
+        var img = document.createElement('img');
+
+        img.src = '/pictures/' +  src + ".png";
+
+        img.width = 30;
+        img.height = 30;
+        var li = $('<li class="list-group-item pb">').append(img).append(fr[i]);
+        $('.lp').append(li);
+
+
       }
+      console.log(fr);
+
+
+            var src = user;
+            var userImg = document.createElement('img');
+            if(src != undefined){
+              userImg.src = '/pictures/' +src;
+              userImg.width = 30;
+              userImg.height = 30;
+            }
+
     });
 
-    console.log(user+"dadaa");
+
 
     socket.on("chat message", function(msg){
 
       $('.lm').append('<li>' +
                           '<div class="media">' +
                           '  <div class="media-left media-top"> ' +
-                          '    <img src="http://placehold.it/24x24" class="media-object"> ' +
+                          '    <img width="30" height="30" src=' + "/pictures/" + msg.from  + ".png"+ ' class="media-object"> ' +
                           '  </div> ' +
                           '  <div class="media-body"> ' +
                           '    <p class="msg">' + msg.message +'</p> ' +
@@ -146,11 +175,11 @@ $(function () {
                             '    <p class="msgr msg">' + $("#tts").val() +'</p> ' +
                             '  </div> ' +
                             '  <div class="media-right media-top"> ' +
-                            '    <img src="http://placehold.it/24x24" class="media-object" > ' +
+                            '    <img width="30" height="30" src= ' + "/pictures/" + user + ".png" + ' class="media-object" > ' +
                             '  </div> ' +
                             '</div> ' +
                           '</li>');
-        socket.emit("chat message", {to : $('#nume').html(),
+        socket.emit("chat message", {to : $('#nume').text(),
                                      from : user,
                                      message : $('#tts').val(),
                                      date : new Date()});
@@ -168,8 +197,8 @@ $(function () {
         $(".lm").empty();
 
         if(messagesWith[clicked.html()] == undefined){
-          $.get('/messages/'+clicked.html(),function(data){
-            messagesWith[clicked.html()] = data;
+          $.get('/messages/'+clicked.text(),function(data){
+            messagesWith[clicked.text()] = data;
             console.log(data);
 
             for(var i = 0; i < data.length; i++){
@@ -180,7 +209,7 @@ $(function () {
                                     '    <p class="msgr msg">' + data[i].message +'</p> ' +
                                     '  </div> ' +
                                     '  <div class="media-right media-top"> ' +
-                                    '    <img src="http://placehold.it/24x24" class="media-object" > ' +
+                                    '    <img width="30" height="30" src=' + "/pictures/" + data[i].from + ".png" +' class="media-object" > ' +
                                     '  </div> ' +
                                     '</div> ' +
                                   '</li>');
@@ -188,7 +217,7 @@ $(function () {
                 $('.lm').append('<li>' +
                                     '<div class="media">' +
                                     '  <div class="media-left media-top"> ' +
-                                    '    <img src="http://placehold.it/24x24" class="media-object"> ' +
+                                    '    <img width="30" height="30" src='+ "/pictures/" + data[i].from + ".png" +' class="media-object"> ' +
                                     '  </div> ' +
                                     '  <div class="media-body"> ' +
                                     '    <p class="msg">' + data[i].message +'</p> ' +
@@ -208,7 +237,7 @@ $(function () {
                                   '    <p class="msgr msg">' + data[i].message +'</p> ' +
                                   '  </div> ' +
                                   '  <div class="media-right media-top"> ' +
-                                  '    <img src="http://placehold.it/24x24" class="media-object" > ' +
+                                  '    <img width="30" height="30" src=' + "/pictures/" + data[i].from + ".png" +' class="media-object" > ' +
                                   '  </div> ' +
                                   '</div> ' +
                                 '</li>');
@@ -216,7 +245,7 @@ $(function () {
               $('.lm').append('<li>' +
                                   '<div class="media">' +
                                   '  <div class="media-left media-top"> ' +
-                                  '    <img src="http://placehold.it/24x24" class="media-object"> ' +
+                                  '    <img width="30" height="30" src=' + "/pictures/" + data[i].from + ".png" +' class="media-object" > ' +
                                   '  </div> ' +
                                   '  <div class="media-body"> ' +
                                   '    <p class="msg">' + data[i].message +'</p> ' +
