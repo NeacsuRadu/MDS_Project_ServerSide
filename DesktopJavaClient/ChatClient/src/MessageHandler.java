@@ -44,6 +44,8 @@ public class MessageHandler
     
     final private int SIGN_IN = 1;
     final private int REGISTER = 2;
+    final private int UPDATE_FRIENDS = 3;
+    final private int MAKE_FRIENDS = 4;
     
     
     // ------ SENDING MESSAGES ------ // 
@@ -131,6 +133,18 @@ public class MessageHandler
                     {
                         handler.registerFailed();
                     }
+                }
+                break;
+            }
+            case UPDATE_FRIENDS:
+            {
+                JSONObject messageData = messageJSON.getJSONObject("data");
+                
+                String username = messageData.getString("username");
+                boolean online = messageData.getBoolean("online");
+                for (MainController handler : handlers)
+                {
+                    handler.updateFriends(username, online);
                 }
                 break;
             }

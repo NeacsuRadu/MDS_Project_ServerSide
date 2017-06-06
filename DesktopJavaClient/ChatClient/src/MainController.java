@@ -28,4 +28,8 @@ public interface MainController
     
     public void registerFailed();
     public void registerSucceded();
+    
+    // ------ APP EVENTS ------ //
+    
+    public void updateFriends(String username, boolean online);
 }
