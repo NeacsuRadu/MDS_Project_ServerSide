@@ -41,17 +41,6 @@ public class Main extends Application
         
         initialize();
         
-        
-        
-        Scanner sc = new Scanner(System.in);
-        while(true)
-        {
-            String username = sc.next();
-            String password = sc.next();
-            
-            clientSocket.sendMessage(MessageHandler.getInstance().getSignInMessage(username, password));
-        }
-        
     }
     
     void initialize()
