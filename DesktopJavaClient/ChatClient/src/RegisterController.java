@@ -10,7 +10,12 @@
  */
 public class RegisterController 
 {
+    private MainController mainController = null;
     
+    public void setMainController(MainController controller)
+    {
+        this.mainController = controller;
+    }
     
     public void initView()
     {

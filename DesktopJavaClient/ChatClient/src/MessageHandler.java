@@ -90,13 +90,19 @@ public class MessageHandler
                 boolean valid = messageData.getBoolean("valid");
                 if (valid)
                 {
-                    /*UserData user = new UserData(messageData.getString("username"), messageData.getString("firstname"), messageData.getString("lastname"));
+                    UserData user = new UserData(messageData.getString("username"), messageData.getString("firstname"), messageData.getString("lastname"));
                     ArrayList<Friend> friends = new ArrayList();
                     JSONArray friendsArray = messageData.getJSONArray("friends");
-                    friendsArray.forEach((friend)->
+                    
+                    for (int i = 0; i < friendsArray.length(); ++i)
                     {
-                       
-                    });*/
+                        JSONObject fr = friendsArray.getJSONObject(i);
+                        friends.add(new Friend(fr.getString("username"), fr.getBoolean("online")));
+                    }
+                    for (MainController handler : handlers)
+                    {
+                        handler.signInSucceded(user, friends);
+                    }
                 }
                 else 
                 {

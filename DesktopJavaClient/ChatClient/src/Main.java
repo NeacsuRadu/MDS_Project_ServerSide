@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+import java.util.ArrayList;
 import java.util.Scanner;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -145,11 +146,11 @@ public class Main extends Application implements MainController
     }
     
     @Override
-    public void signInSucceded()
+    public void signInSucceded(UserData userData, ArrayList<Friend> userFriends)
     {
         Platform.runLater(()->
         {
-            // 
+            
         });
     }
     

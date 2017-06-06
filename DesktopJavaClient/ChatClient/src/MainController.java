@@ -1,3 +1,6 @@
+
+import java.util.ArrayList;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -19,7 +22,7 @@ public interface MainController
     // ------ SIGN EVENTS ------ //
     
     public void signInFailed();
-    public void signInSucceded();
+    public void signInSucceded(UserData userData, ArrayList<Friend> userFriends);
     
     // ------ REGISTER EVENTS ------ // 
     

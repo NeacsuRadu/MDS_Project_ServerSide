@@ -10,5 +10,15 @@
  */
 public class AppController 
 {
-    public void initView();
+    private MainController mainController = null;
+    
+    public void setMainController(MainController controller)
+    {
+        this.mainController = controller;
+    }
+    
+    public void initView()
+    {
+        
+    }
 }
