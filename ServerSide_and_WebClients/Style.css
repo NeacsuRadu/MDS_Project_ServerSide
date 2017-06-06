@@ -1,0 +1,37 @@
+* 
+{
+	margin: 0; 
+	padding: 0; 
+	box-sizing: 
+	border-box; 
+}
+
+body 
+{
+	font: 13px Helvetica, Arial;
+}
+
+#conversation 
+{
+	background: yellow; 
+	position: fixed; 
+	right: 0; 
+	width: 70%; 
+	height: 100%;
+}
+
+#leftside 
+{
+	background: red; 
+	position: fixed; 
+	padding: 3px; 
+	left: 0; 
+	width: 30%; 
+	height:100%;
+}
+form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 70%; }
+form input { border: 0; padding: 1%; width: 90%; margin-right: .5%; }
+form button { width: 8%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+#messagesUl { list-style-type: none; margin: 0; padding: 0; }
+#messagesUl li { padding: 5px 10px; }
+#messagesUl li:nth-child(odd) { background: #eee; }
