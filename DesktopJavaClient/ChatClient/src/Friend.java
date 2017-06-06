@@ -8,7 +8,16 @@
  *
  * @author Radu-Stefan Neacsu
  */
-public interface MessageEvents 
+public class Friend 
 {
+    private String username;
+    private boolean online;
+
+    public Friend(String username, boolean online) 
+    {
+        this.username = username;
+        this.online = online;
+    }
+    
     
 }

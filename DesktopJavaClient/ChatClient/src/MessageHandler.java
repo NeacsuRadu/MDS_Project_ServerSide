@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /*
@@ -28,13 +29,13 @@ public class MessageHandler
     
     private MessageHandler()
     {
-        
+        handlers = new ArrayList<>();
     }
     
     // ------ HANDLERS ------ // 
-    private ArrayList<MessageEvents> handlers;
+    private ArrayList<MainController> handlers;
     
-    public synchronized void addHandler(MessageEvents handler)
+    public synchronized void addHandler(MainController handler)
     {
         handlers.add(handler);
     }
@@ -89,11 +90,20 @@ public class MessageHandler
                 boolean valid = messageData.getBoolean("valid");
                 if (valid)
                 {
-                    System.out.println("Merge");
+                    /*UserData user = new UserData(messageData.getString("username"), messageData.getString("firstname"), messageData.getString("lastname"));
+                    ArrayList<Friend> friends = new ArrayList();
+                    JSONArray friendsArray = messageData.getJSONArray("friends");
+                    friendsArray.forEach((friend)->
+                    {
+                       
+                    });*/
                 }
                 else 
                 {
-                    System.out.println("Nu merge");
+                    for (MainController handler : handlers)
+                    {
+                        handler.signInFailed();
+                    }
                 }
                 break;
             }
@@ -104,11 +114,17 @@ public class MessageHandler
                 boolean valid = messageData.getBoolean("valid");
                 if (valid)
                 {
-                    System.out.println("Merge");
+                    for (MainController handler : handlers)
+                    {
+                        handler.registerSucceded();
+                    }
                 }
                 else 
                 {
-                    System.out.println("Nu merge");
+                    for (MainController handler : handlers)
+                    {
+                        handler.registerFailed();
+                    }
                 }
                 break;
             }
