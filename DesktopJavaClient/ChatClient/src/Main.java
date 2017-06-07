@@ -6,7 +6,6 @@
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -52,6 +51,8 @@ public class Main extends Application implements MainController
     boolean initialize()
     {
         boolean bRes = true;
+        
+        MessageHandler.getInstance().addHandler(this);
         
         signInLoader = new FXMLLoader();
         registerLoader = new FXMLLoader();

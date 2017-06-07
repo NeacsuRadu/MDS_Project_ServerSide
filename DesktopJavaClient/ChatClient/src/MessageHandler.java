@@ -142,11 +142,13 @@ public class MessageHandler
         {
             case SIGN_IN:
             {
+                System.out.println("SIGN_IN case ");
                 JSONObject messageData = messageJSON.getJSONObject("data");
                 
                 boolean valid = messageData.getBoolean("valid");
                 if (valid)
                 {
+                    System.out.println("Valid");
                     UserData user = new UserData(messageData.getString("username"), messageData.getString("firstname"), messageData.getString("lastname"));
                     
                     ArrayList<Friend> friends = new ArrayList();
@@ -172,6 +174,7 @@ public class MessageHandler
                 }
                 else 
                 {
+                    System.out.println("Not valid");
                     for (MainController handler : handlers)
                     {
                         handler.signInFailed();

@@ -466,10 +466,18 @@ http.listen(9090);
 
 var net = require('net');
 
-var SIGNIN = 1;
-var REGISTER = 2;
+var SIGNIN 						= 1;
+var REGISTER 					= 2;
+var UPDATE_FRIENDS 				= 3;
+var SEND_FRIEND_REQUEST 		= 4;
+var SEND_FRIEND_REQUEST_ANSWER 	= 5;
+var FRIEND_REQUEST 				= 6;
+var FRIEND_REQUEST_FAILED 		= 7;
+var SEND_MESSAGE 				= 8;
+var RECEIVE_MESSAGE 			= 9;
+var LOGOUT 						= 10;
 
-var desktopClients = [];
+var desktopClients = {};
 
 net.createServer(function (socket){
     socket.name = socket.remoteAddress + ":" + socket.remotePort;
@@ -484,7 +492,10 @@ net.createServer(function (socket){
         {
             var username = json.data.username;
 			var password = json.data.password;
-            console.log( "t: " + type + " user: " + username + " pass: " + password);
+            var jsonResp = checkCredentials(username, password, function(respJson)
+			{
+				socket.write(JSON.stringify(respJson) + "\n");
+			});
 		}
 		else if (type == REGISTER)
 		{
@@ -492,8 +503,17 @@ net.createServer(function (socket){
 			var password = json.data.password;
 			var firstname = json.data.firstname;
 			var lastname = json.data.lastname;
-			console.log( "t: " + type + " " + username + " " + password);
+			var jsonResp = registerUser(username, password, function(respJson)
+			{
+				console.log(respJson);
+				socket.write(JSON.stringify(respJson) + "\n");
+			});
 		}
+		else if (type == LOGOUT)
+		{
+
+		}
+
     });
 
     socket.on("end", function (){
@@ -511,3 +531,89 @@ net.createServer(function (socket){
 }).listen(43210);
 
 console.log("Server listening on 43210 port !!");
+
+function checkCredentials(username, password, callback)
+{
+	var user;
+	var resp = {};
+	resp.type = SIGNIN;
+	var respData = {};
+    usersManager.findUser({_id: username},
+		function(err,res)
+		{
+			user = res[0];
+			if(user == undefined || user.pw != password)
+			{
+				respData.valid = false;
+				resp.data = respData;
+				callback(resp);
+			}
+			else
+			{
+				desktopClients[username] = user;
+
+				var friendsArray = user.friends;
+				var jsonFriendsArray = [];
+				var jsonRequestArray = [];
+				for (var index = 0; index < friendsArray.length; index++)
+				{
+					var friend = {};
+					friend.username = friendsArrayp[index];
+					if (desktopClients[friendsArray[index]] != undefined)
+					{
+						friend.online = true;
+					}
+					else
+					{
+						friend.online = false;
+					}
+					jsonFriendsArray.push(friend);
+				}
+
+				respData.valid = true;
+				respData.friends = jsonFriendsArray;
+				repsData.requests = jsonRequestArray;
+				resp.data = respData;
+				callback(resp);
+			}
+		});
+}
+
+function registerUser(username, password, callback)
+{
+	var respj = {};
+	respj.type = REGISTER;
+	var respData = {};
+    usersManager.checkName(username,function(err, resp)
+		{
+			if(resp.found == 0)
+			{
+				console.log(1);
+				var us = {};
+				us.name = username;
+				us.pw = password;
+				usersManager.addUser(us, function(err,resp)
+					{
+						if(err)
+						{
+							console.log(2);
+							respData.valid = false;
+						}
+						else
+						{
+							console.log(3);
+							respData.valid = true;
+						}
+						respj.data = respData;
+						callback(respj);
+					});
+			}
+			else
+			{
+				console.log(4);
+				respData.valid = false;
+				respj.data = respData;
+				callback(respj);
+			}
+		});
+}

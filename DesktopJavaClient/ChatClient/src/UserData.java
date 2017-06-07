@@ -20,6 +20,18 @@ public class UserData
         this.firstname = firstname;
         this.lastname = lastname;
     }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
     
     
 }
