@@ -421,3 +421,52 @@ function authenticatedOrNot(req, res, next){
 http.listen(9090);
 
 // ------------------------------------------------------------------------------
+
+var net = require('net');
+
+var SIGNIN = 1;
+var REGISTER = 2;
+
+var desktopClients = [];
+
+net.createServer(function (socket){
+    socket.name = socket.remoteAddress + ":" + socket.remotePort;
+    console.log("New client connected " + socket.name );
+
+    socket.on("data", function (data){
+        var json = JSON.parse(data.toString());
+		console.log(data.toString());
+        
+		var type = json.type;
+        if (type == SIGNIN)
+        {
+            var username = json.data.username; 
+			var password = json.data.password;
+            console.log( "t: " + type + " user: " + username + " pass: " + password);
+		}
+		else if (type == REGISTER)
+		{
+			var username = json.data.username;
+			var password = json.data.password;
+			var firstname = json.data.firstname;
+			var lastname = json.data.lastname;
+			console.log( "t: " + type + " " + username + " " + password);
+		}
+    });
+
+    socket.on("end", function (){
+        console.log("Client disconnected " + socket.name);
+    });
+	
+	socket.on("close", function(had_error){
+        console.log("Client disconnected " + socket.name);
+	});
+	
+	socket.on("error", function(error){
+		console.log(error);
+	});
+
+}).listen(43210);
+
+console.log("Server listening on 43210 port !!");
+
