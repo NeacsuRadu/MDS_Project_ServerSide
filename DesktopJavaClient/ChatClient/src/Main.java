@@ -53,6 +53,8 @@ public class Main extends Application implements MainController
     {
         boolean bRes = true;
         
+        MessageHandler.getInstance().addHandler(this);
+        
         signInLoader = new FXMLLoader();
         registerLoader = new FXMLLoader();
         //mainLoader = new FXMLLoader();

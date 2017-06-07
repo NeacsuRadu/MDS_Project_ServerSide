@@ -356,7 +356,7 @@ var net = require('net');
 var SIGNIN = 1;
 var REGISTER = 2;
 
-var desktopClients = [];
+var desktopClients = {};
 
 net.createServer(function (socket){
     socket.name = socket.remoteAddress + ":" + socket.remotePort;
@@ -371,7 +371,10 @@ net.createServer(function (socket){
         {
             var username = json.data.username; 
 			var password = json.data.password;
-            console.log( "t: " + type + " user: " + username + " pass: " + password);
+            var jsonResp = checkCredentials(username, password, function(respJson)
+			{
+				socket.write(JSON.stringify(respJson) + "\n");
+			});
 		}
 		else if (type == REGISTER)
 		{
@@ -379,7 +382,10 @@ net.createServer(function (socket){
 			var password = json.data.password;
 			var firstname = json.data.firstname;
 			var lastname = json.data.lastname;
-			console.log( "t: " + type + " " + username + " " + password);
+			var jsonResp = registerUser(username, password, function(respJson)
+			{
+				socket.write(JSON.stringify(respJson) + "\n");
+			});
 		}
     });
 
@@ -399,3 +405,63 @@ net.createServer(function (socket){
 
 console.log("Server listening on 43210 port !!");
 
+function checkCredentials(username, password, callback)
+{
+	var user;
+	var resp = {};
+	resp.type = SIGNIN;
+	var respData = {};
+    usersManager.findUser({_id: username},
+		function(err,res)
+		{
+			user = res[0];
+			if(user == undefined || user.pw != password)
+			{
+				respData.valid = false;
+				resp.data = respData;
+				callback(resp);
+			}
+			else
+			{
+				desktopClients[username] = user;
+				var = user.friends;
+				
+				
+			}
+		});
+}
+
+function registerUser(username, password, callback)
+{
+	var resp = {};
+	resp.type = REGISTER;
+	var respData = {};
+    usersManager.checkName(username,function(err, resp)
+		{
+			if(resp.found == 0)
+			{
+				var us = {};
+				us.name = username;
+				us.pw = password;
+				usersManager.addUser(us, function(err,resp)
+					{
+						if(err)
+						{		
+							respData.valid = false;
+						}
+						else
+						{
+							respData.valid = true;
+						}
+						resp.data = respData;
+						callback(resp);
+					});
+			}
+			else
+			{
+				respData.valid = false;
+				resp.data = respData;
+				callback(resp);
+			}
+		});
+}
