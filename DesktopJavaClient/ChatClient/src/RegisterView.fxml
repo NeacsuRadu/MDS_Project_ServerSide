@@ -21,8 +21,8 @@
       <TextField fx:id="registerUsername" layoutX="135.0" layoutY="196.0" />
       <PasswordField fx:id="registerPassword" layoutX="135.0" layoutY="231.0" />
       <PasswordField fx:id="registerRePassword" layoutX="135.0" layoutY="266.0" />
-      <Button fx:id="registerRegister" layoutX="24.0" layoutY="339.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="102.0" text="Register" />
-      <Button fx:id="registerSignIn" layoutX="173.0" layoutY="339.0" mnemonicParsing="false" prefHeight="57.0" prefWidth="102.0" text="Sign In" />
+      <Button layoutX="24.0" layoutY="339.0" mnemonicParsing="false" onAction="#registerPressRegister" prefHeight="57.0" prefWidth="102.0" text="Register" />
+      <Button layoutX="173.0" layoutY="339.0" mnemonicParsing="false" onAction="#registerPressSignIn" prefHeight="57.0" prefWidth="102.0" text="Sign In" />
       <Label fx:id="registerErrors" layoutX="77.0" layoutY="308.0" textFill="#b52a2a" />
       <ImageView fitHeight="104.0" fitWidth="327.0" pickOnBounds="true" preserveRatio="true">
          <image>

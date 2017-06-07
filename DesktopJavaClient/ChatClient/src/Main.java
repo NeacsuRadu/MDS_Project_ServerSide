@@ -52,6 +52,15 @@ public class Main extends Application implements MainController
     boolean initialize()
     {
         boolean bRes = true;
+        
+        signInLoader = new FXMLLoader();
+        registerLoader = new FXMLLoader();
+        //mainLoader = new FXMLLoader();
+
+        signInLoader.setLocation(Main.class.getResource("SignInView.fxml"));
+        registerLoader.setLocation(Main.class.getResource("RegisterView.fxml"));
+        //mainLoader.setLocation(Main.class.getResource("MainView.fxml"));
+        
         try
         {
             signInLoader = new FXMLLoader();
@@ -69,7 +78,7 @@ public class Main extends Application implements MainController
             signInScene = new Scene(rootSignIn);
             registerScene = new Scene(rootRegister);
             //mainScene = new Scene(rootMain);
-            
+
             signInController = signInLoader.getController();
             registerController = registerLoader.getController();
             //appController = mainLoader.getController();
@@ -127,7 +136,7 @@ public class Main extends Application implements MainController
     @Override
     public void showAppView()
     {
-        this.primaryStage.setScene(mainScene);
+        //this.primaryStage.setScene(mainScene);
         this.appController.initView();
         this.primaryStage.show();
     }
