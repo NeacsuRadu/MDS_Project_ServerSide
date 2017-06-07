@@ -495,8 +495,9 @@ net.createServer(function (socket){
         {
             var username = json.data.username;
 			var password = json.data.password;
-            var jsonResp = checkCredentials(username, password, function(respJson)
+            var jsonResp = checkCredentials(username, password, socket, function(respJson)
 			{
+				console.log(respJson);
 				socket.write(JSON.stringify(respJson) + "\n");
 			});
 		}
@@ -514,9 +515,37 @@ net.createServer(function (socket){
 		}
 		else if (type == LOGOUT)
 		{
-
+			var username = json.data.username;
+			
+			tellMyFriendsImGone(username, false);
+			
+			delete desktopClients[username];
 		}
-
+		else if (type == SEND_FRIEND_REQUEST)
+		{
+			var username_from = json.data.from;
+			var username_to = json.data.to;
+			
+			sendFriendRequest(username_from, username_to);
+		}
+		else if (type == SEND_FRIEND_REQUEST_ANSWER)
+		{
+			var username_from = json.data.from;
+			var username_to = json.data.to;
+			var accept = json.data.accept;
+			
+			if (accept == true)
+			{
+				desktopClients[username_from].friends.push(username_to);
+				usersManager.makeFriends(username_from, username_to, function(err, res) {} );
+				if (desktopClients[username_to] != undefined)
+				{
+					desktopClients[username_to].friends.push(username_from);
+					var respJson = getUpdateFriendsMessage(username_from, true);
+					desktopClients[username_to].socket.write(JSON.stringify(respJson) + "\n");
+				}
+			}
+		}
     });
 
     socket.on("end", function (){
@@ -535,7 +564,7 @@ net.createServer(function (socket){
 
 console.log("Server listening on 43210 port !!");
 
-function checkCredentials(username, password, callback)
+function checkCredentials(username, password, socket, callback)
 {
 	var user;
 	var resp = {};
@@ -553,6 +582,7 @@ function checkCredentials(username, password, callback)
 			}
 			else
 			{
+				user.socket = socket;
 				desktopClients[username] = user;
 
 				var friendsArray = user.friends;
@@ -572,10 +602,13 @@ function checkCredentials(username, password, callback)
 					}
 					jsonFriendsArray.push(friend);
 				}
+	
+				tellMyFriendsImGone(username, true);
 
 				respData.valid = true;
+				respData.username = username;
 				respData.friends = jsonFriendsArray;
-				repsData.requests = jsonRequestArray;
+				respData.requests = jsonRequestArray;
 				resp.data = respData;
 				callback(resp);
 			}
@@ -591,20 +624,17 @@ function registerUser(username, password, callback)
 		{
 			if(resp.found == 0)
 			{
-				console.log(1);
 				var us = {};
 				us.name = username;
 				us.pw = password;
 				usersManager.addUser(us, function(err,resp)
 					{
 						if(err)
-						{
-							console.log(2);
+						{		
 							respData.valid = false;
 						}
 						else
 						{
-							console.log(3);
 							respData.valid = true;
 						}
 						respj.data = respData;
@@ -613,10 +643,83 @@ function registerUser(username, password, callback)
 			}
 			else
 			{
-				console.log(4);
 				respData.valid = false;
 				respj.data = respData;
 				callback(respj);
 			}
 		});
 }
+
+function tellMyFriendsImGone(username, online)
+{
+	var friendsArray = desktopClients[username].friends;
+	
+	for (var index = 0; index < friendsArray.length; index++)
+	{
+		if (desktopClients[friendsArray[index]] != undefined)
+		{
+			var respJson = getUpdateFriendsMessage(username, online);
+			desktopClients[friendsArray[index]].socket.write(JSON.stringify(respJson) + "\n");
+		}
+	}
+}
+
+function getUpdateFriendsMessage(username, online)
+{
+	var resp = {};
+	var respData = {};
+	respData.username = username;
+	respData.online = online;
+	
+	resp.type = UPDATE_FRIENDS;
+	resp.data = respData;
+	
+	return resp;
+}
+
+function sendFriendRequest(username_from, username_to)
+{
+	// TO OD :: add funcking request into the database 
+	
+	//
+	usersManager.checkName(username_to, function(err, resp)
+		{
+			if(resp.found == 0)
+			{
+				if (desktopClients[username_from] != undefined)
+				{
+					respJson = getFriendRequestFailedMessage();
+					desktopClients[username_from].socket.write(JSON.stringify(respJson) + "\n");
+				}
+			}
+			else
+			{
+				if (desktopClients[username_to] != undefined)
+				{
+					respJson = getFriendRequestMessage(username_from);
+					desktopClients[username_to].socket.write(JSON.stringify(respJson) + "\n");
+				}
+			}
+		});
+}
+
+function getFriendRequestMessage(username)
+{
+	var resp = {};
+	var respData = {};
+	respData.username = username;
+	
+	resp.type = FRIEND_REQUEST;
+	resp.data = respData;
+	
+	return resp;
+}
+
+function getFriendRequestFailedMessage()
+{
+	var resp = {};
+	resp.type = FRIEND_REQUEST_FAILED;
+	
+	return resp;
+}
+

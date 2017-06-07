@@ -149,7 +149,7 @@ public class MessageHandler
                 if (valid)
                 {
                     System.out.println("Valid");
-                    UserData user = new UserData(messageData.getString("username"), messageData.getString("firstname"), messageData.getString("lastname"));
+                    UserData user = new UserData(messageData.getString("username"), "", "");
                     
                     ArrayList<Friend> friends = new ArrayList();
                     JSONArray friendsArray = messageData.getJSONArray("friends");
