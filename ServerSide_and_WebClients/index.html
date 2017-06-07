@@ -9,19 +9,44 @@
   <body>
 	<div id="leftside">
 		<div id="menu">
+			<span id = "name"> Welcome! </span>
+			<div class = "tooltip">
+				<button id = "logout" class = "menuButton"></button>
+				<span class="tooltiptext"> Logout </span>
+			</div>
+			<div class = "tooltip">
+				<button id = "add" class = "menuButton"></button>
+				<span class="tooltiptext"> Add a contact </span>
+			</div>
+			<div class = "tooltip"> 
+				<button id = "settings" class = "menuButton"></button>
+				<span class="tooltiptext"> Change accound settings </span>
+			</div>
 		</div>
 		<div id="friends">
+			<ul id = "friendList">
+				<li> First Friend </li>
+				<li> Second friend </li>
+				<li> Another Friend </li>
+				<li> Another Friend </li>
+				<li> Another Friend </li>
+				<li> Another Friend </li>
+				<li> Another Friend </li>
+				<li> Last Friend </li>
+				<li> One More Friend </li>
+			</ul>
 		</div>
 	</div>
 	<div id="conversation">
 		<span>
 			<div id="messagesDiv">
-				<ul id="messagesUl"></ul>
+				<div id ="info"> firstName lastName </div>
+				<ul id="messages"></ul>
 			</div>
 			<div id="form">
 				<form action="">
-				  <input id="messageInput" autocomplete="off" />
-				  <button id="sendButton">Send</button>
+				  <input id="m" autocomplete="off" />
+				  <button id="sendButton"></button>
 				</form>
 			</div>
 		</span>
@@ -31,6 +56,27 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
+$(function() {
+    var butt = $('#add');
+    var height = butt.height();
+    butt.css('width', height);
+	
+	butt = $('#logout');
+    height = butt.height();
+    butt.css('width', height);
+	
+	butt = $('#settings');
+    height = butt.height();
+    butt.css('width', height);
+	
+	butt = $('#sendButton');
+    height = butt.height();
+    butt.css('width', height);
+	
+	var form = $('#form');
+	var input = $('#m');
+	input.css('width', form.width() - butt.width() -10);
+});
 $(function () {
     var socket = io();
     $('form').submit(function(){
