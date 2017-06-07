@@ -8,9 +8,9 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<SplitPane dividerPositions="0.15829145728643215" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="400.0" prefWidth="251.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AppController">
+<SplitPane dividerPositions="0.15829145728643215" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="477.0" prefWidth="251.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AppController">
   <items>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="57.0" prefWidth="249.0">
          <children>
             <TextField fx:id="mainFriendUsername" layoutX="14.0" layoutY="10.0" prefHeight="25.0" prefWidth="129.0" />
             <Button layoutX="161.0" layoutY="9.0" mnemonicParsing="false" onAction="#mainAddFriend" prefHeight="37.0" prefWidth="74.0" text="Add friend" />
@@ -18,9 +18,9 @@
          </children></AnchorPane>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
          <children>
-            <SplitPane dividerPositions="0.8787878787878788" layoutY="-1.0" orientation="VERTICAL" prefHeight="332.0" prefWidth="249.0">
+            <SplitPane dividerPositions="0.7291139240506329" layoutY="-1.0" orientation="VERTICAL" prefHeight="397.0" prefWidth="249.0">
               <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="284.0" prefWidth="247.0">
                      <children>
                         <ScrollPane prefHeight="287.0" prefWidth="247.0">
                            <content>
@@ -29,9 +29,26 @@
                         </ScrollPane>
                      </children>
                   </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="247.0">
                      <children>
-                        <Button layoutX="1.0" layoutY="-1.0" mnemonicParsing="false" onAction="#mainSignOut" prefHeight="37.0" prefWidth="247.0" text="Sign out" />
+                        <SplitPane dividerPositions="0.6078431372549019" layoutX="-1.0" orientation="VERTICAL" prefHeight="104.0" prefWidth="251.0">
+                          <items>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="40.0" prefWidth="249.0">
+                                 <children>
+                                    <ScrollPane layoutX="-2.0" prefHeight="59.0" prefWidth="251.0">
+                                       <content>
+                                          <ListView fx:id="mainFriendsRequests" prefHeight="56.0" prefWidth="248.0" />
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#mainSignOut" prefHeight="37.0" prefWidth="247.0" text="Sign out" />
+                                 </children>
+                              </AnchorPane>
+                          </items>
+                        </SplitPane>
                      </children>
                   </AnchorPane>
               </items>

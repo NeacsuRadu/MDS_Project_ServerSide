@@ -31,6 +31,7 @@ public class AppController
     private TextField mainFriendUsername;
     @FXML
     private ListView<Pane> mainListView;
+    private ListView<Pane> mainFriendsRequests;
     @FXML
     private Label mainErrors;
     
