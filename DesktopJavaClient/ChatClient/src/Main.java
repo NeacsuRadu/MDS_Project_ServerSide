@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javafx.application.Application;
@@ -62,6 +63,14 @@ public class Main extends Application implements MainController
         
         try
         {
+            signInLoader = new FXMLLoader();
+            registerLoader = new FXMLLoader();
+            //mainLoader = new FXMLLoader();
+
+            signInLoader.setLocation(Main.class.getResource("SignInView.fxml"));
+            registerLoader.setLocation(Main.class.getResource("RegisterView.fxml"));
+            //mainLoader.setLocation(Main.class.getResource("MainView.fxml"));
+        
             Parent rootSignIn = signInLoader.load();
             Parent rootRegister = registerLoader.load();
             //Parent rootMain = mainLoader.load();
@@ -74,22 +83,27 @@ public class Main extends Application implements MainController
             registerController = registerLoader.getController();
             //appController = mainLoader.getController();
 
-            this.clientSocket = new ClientSocket();
-            if (!clientSocket.init())
-            {
-                clientSocket = null;
-                System.out.println("Could not initialize socket");
-            }
-            else 
-            {
-                clientSocket.startListening();
-            }
+            signInController.setMainController(this);
+            registerController.setMainController(this);
+            //appController.setMainController(this);
+            
         }
-        catch(Exception ex)
+        catch(IOException ex)
         {
             System.out.println("Initialize error " + ex.getMessage());
             bRes = false;
-        }        
+        }     
+        
+        this.clientSocket = new ClientSocket();
+        if (!clientSocket.init())
+        {
+            clientSocket = null;
+            System.out.println("Could not initialize socket");
+        }
+        else 
+        {
+            clientSocket.startListening();
+        }
         return bRes;
     }
     
@@ -150,7 +164,8 @@ public class Main extends Application implements MainController
     {
         Platform.runLater(()->
         {
-            
+            appController.signInSucceeded(userData, userFriends);
+            showAppView();
         });
     }
     
@@ -172,5 +187,13 @@ public class Main extends Application implements MainController
         });
     }
     
+    @Override
+    public void updateFriends(String username, boolean online)
+    {
+        Platform.runLater(()->
+        {
+            appController.updateFriends(username, online);
+        });
+    }
     
 }

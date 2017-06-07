@@ -27,21 +27,25 @@ public class SignInController
     @FXML
     private Label signInErrors, signInConnectionErrors;
     
-    public void singInPressSingIn(ActionEvent e){
+    public void singInPressSingIn(ActionEvent e)
+    {
         
         String username = new String(signInUsername.getText());
         String password = new String(signInPassword.getText());
         
-        if(username.equals("") || password.equals("")){
+        if(username.equals("") || password.equals(""))
+        {
             showSignInFailedError();
         }
-        else{
+        else
+        {
             mainController.sendMessage(MessageHandler.getInstance().getSignInMessage(username, password));
         }
     }
     
     
-    public void singInPressRegister(ActionEvent e){
+    public void singInPressRegister(ActionEvent e)
+    {
         mainController.showRegisterView();
     }
     
