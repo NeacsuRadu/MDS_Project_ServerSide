@@ -17,6 +17,8 @@ var url = 'mongodb://localhost:27017/test';
 
 var usersConnected = {};
 
+var requests = {};
+
 var db;
 var users;
 var messages;
@@ -233,10 +235,12 @@ app.get("/friends",authenticatedOrNot,function(req,resp){
   var user = connected[req.sessionID]._id;
   usersManager.findUser({_id:user},function(err,res){
 
+    console.log(res[0]);
+
     var sends = res[0].friends;
     var obi = {
       ob : {},
-      requests : {}
+      requests : res[0].requests
     };
 
     for(var i = 0; i < sends.length; i++){
@@ -277,7 +281,7 @@ app.get("/user/:nume",function(req,resp){
       var conn = false;
 
 
-      usersManager.addRequest(connected[req.sessionID]._id,name,function(err,res){
+      usersManager.addRequest(name,connected[req.sessionID]._id,function(err,res){
         if(err){
           console.log(err);
         }else{
@@ -286,6 +290,7 @@ app.get("/user/:nume",function(req,resp){
               conn = true;
               console.log("emit la " + connected[id]._id);
               connected[id].socket.emit("new request",connected[req.sessionID]._id);
+              requests[connected[req.sessionID]._id] = name;
             }
           }
 
@@ -298,10 +303,50 @@ app.get("/user/:nume",function(req,resp){
   });
 });
 
+
+
 app.get("/register", function(req,res){
     res.sendFile(__dirname +"/views/register.html");
 });
 
+
+app.get("/make/:name",authenticatedOrNot,function(req,resp){
+    var name = req.params.name;
+    usersManager.makeFriends(connected[req.sessionID]._id,name,function(err,res){
+      if(err){
+        console.log(err);
+        resp.send({error : err});
+      }
+      else{
+
+        delete requests[name];
+
+        usersManager.deleteRequest(connected[req.sessionID]._id,name,function(err,res){
+          if(err){
+            console.log(err);
+            resp.send({error : err});
+          }
+        });
+
+        var con = false;
+
+        connected[req.sessionID].friends.push(name);
+
+        for(var id in connected){
+          if(connected[id]._id == name){
+            con = true;
+            connected[id].socket.emit("user accept",connected[req.sessionID]._id);
+            connected[id].friends.push(connected[req.sessionID]._id);
+          }
+        }
+      }
+
+      resp.send({
+        connected : con
+      });
+
+    })
+});
 
 app.get("/pictures/:name",function(req,res){
 
@@ -444,11 +489,11 @@ net.createServer(function (socket){
     socket.on("data", function (data){
         var json = JSON.parse(data.toString());
 		console.log(data.toString());
-        
+
 		var type = json.type;
         if (type == SIGNIN)
         {
-            var username = json.data.username; 
+            var username = json.data.username;
 			var password = json.data.password;
             var jsonResp = checkCredentials(username, password, socket, function(respJson)
 			{
@@ -501,18 +546,16 @@ net.createServer(function (socket){
 				}
 			}
 		}
-		
-		
     });
 
     socket.on("end", function (){
         console.log("Client disconnected " + socket.name);
     });
-	
+
 	socket.on("close", function(had_error){
         console.log("Client disconnected " + socket.name);
 	});
-	
+
 	socket.on("error", function(error){
 		console.log(error);
 	});
@@ -541,7 +584,7 @@ function checkCredentials(username, password, socket, callback)
 			{
 				user.socket = socket;
 				desktopClients[username] = user;
-				
+
 				var friendsArray = user.friends;
 				var jsonFriendsArray = [];
 				var jsonRequestArray = [];
@@ -553,15 +596,15 @@ function checkCredentials(username, password, socket, callback)
 					{
 						friend.online = true;
 					}
-					else 
+					else
 					{
 						friend.online = false;
 					}
 					jsonFriendsArray.push(friend);
 				}
-				
+	
 				tellMyFriendsImGone(username, true);
-				
+
 				respData.valid = true;
 				respData.username = username;
 				respData.friends = jsonFriendsArray;

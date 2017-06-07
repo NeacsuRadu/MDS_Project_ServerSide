@@ -6,7 +6,6 @@
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;

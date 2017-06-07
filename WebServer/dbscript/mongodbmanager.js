@@ -109,6 +109,13 @@ usersManager.prototype.checkName = function(name, callback){
   });
 }
 
+usersManager.prototype.deleteRequest = function(user,name,callback){
+  this.users.update({_id : user},{$pull : {requests : name}},(err,res) =>{
+      callback(err,res);
+    });
+}
+
+
 usersManager.prototype.addRequest = function(user,name,callback){
 
   this.users.update({_id : user},{$addToSet : {requests : name}},(err,res) =>{
