@@ -13,6 +13,11 @@ crossorigin="anonymous">
 
 <style>
 
+.disabled {
+    pointer-events:none; //This makes it not clickable
+    opacity:0.6;         //This grays it out to look disabled
+}
+
 #mesaje{
   height: 500px;
 }
@@ -127,8 +132,8 @@ $(function () {
         $('.lp').append(li);
       }
 
-      for(var i in rq){
-        var li = makeRE(i);
+      for(var i= 0; i < rq.length; i++){
+        var li = makeRE(rq[i]);
         $('.lr').append(li);
       }
 
@@ -156,6 +161,10 @@ $(function () {
 
     socket.on("friend disconnected",function(friend){
       userDisconnectedHandler(friend);
+    });
+
+    socket.on("user accept",function(friend){
+      userAcceptHandler(friend);
     });
 
 
@@ -295,9 +304,7 @@ $(function () {
       var name = $('.searchf').val();
       $.get('/user/' + name, function(res){
         if(res.succ == true){
-          console.log(res);
-          var li = makeLI(name,res.connected);
-          $('.lp').append(li);
+          alert("request sent");
         }else{
           alert('no such user!');
         }
@@ -336,6 +343,26 @@ function makeLI(name,on){
   return li;
 }
 
+
+$("body").on('click','.accept',function(ev){
+  console.log("daa");
+  var name = $(this).parent().text();
+  console.log(name);
+  $.get('/make/'+name,function(data){
+    if(data.error) return;
+    var li = makeLI(name,data.connected);
+    $('.lp').append(li);
+    $.each($(".lr li"),function(index,elem){
+
+      if($(elem).text() == name){
+        $(elem).parent().remove();
+      }
+    });
+  });
+
+
+});
+
 function makeRE(name){
   var imgAv = document.createElement('img');
 
@@ -352,6 +379,11 @@ function makeRE(name){
   return li;
 }
 
+function userAcceptHandler(friend){
+  var li = makeLI(friend,true);
+  $('.lp').append(li);
+}
+
 function newRequestHandler(friend){
   console.log("da");
   var li = makeRE(friend);
@@ -360,7 +392,7 @@ function newRequestHandler(friend){
 
 function userConnectedHandler(friend){
   $.each($(".lp li"),function(index,elem){
-
+    console.log(elem.text());
     if($(elem).text() == friend){
       $(elem).find(".loggedStatus").attr("src","/images/green.png");
     }
@@ -369,7 +401,7 @@ function userConnectedHandler(friend){
 
 function userDisconnectedHandler(friend){
   $.each($(".lp li"),function(index,elem){
-
+    console.log(elem.text());
     if($(elem).text() == friend){
       $(elem).find(".loggedStatus").attr("src","/images/red.png");
     }
