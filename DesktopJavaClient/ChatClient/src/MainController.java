@@ -22,7 +22,7 @@ public interface MainController
     // ------ SIGN EVENTS ------ //
     
     public void signInFailed();
-    public void signInSucceded(UserData userData, ArrayList<Friend> userFriends);
+    public void signInSucceded(UserData userData, ArrayList<Friend> userFriends, ArrayList<String> friendRequests);
     
     // ------ REGISTER EVENTS ------ // 
     
@@ -32,4 +32,10 @@ public interface MainController
     // ------ APP EVENTS ------ //
     
     public void updateFriends(String username, boolean online);
+    
+    public void addFriendRequest(String usename);
+    
+    public void friendRequestFailed();
+    
+    public void messageReceived(String username_from, String message);
 }

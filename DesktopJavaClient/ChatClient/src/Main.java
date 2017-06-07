@@ -160,11 +160,11 @@ public class Main extends Application implements MainController
     }
     
     @Override
-    public void signInSucceded(UserData userData, ArrayList<Friend> userFriends)
+    public void signInSucceded(UserData userData, ArrayList<Friend> userFriends, ArrayList<String> friendRequests)
     {
         Platform.runLater(()->
         {
-            appController.signInSucceeded(userData, userFriends);
+            appController.signInSucceeded(userData, userFriends, friendRequests);
             showAppView();
         });
     }
@@ -196,4 +196,27 @@ public class Main extends Application implements MainController
         });
     }
     
+    @Override
+    public void addFriendRequest(String username)
+    {
+        Platform.runLater(()->
+        {
+            appController.addFriendRequest(username);
+        });
+    }
+    
+    @Override 
+    public void friendRequestFailed()
+    {
+        Platform.runLater(()->
+        {
+            appController.friendRequestFailed();
+        });
+    }
+    
+    @Override
+    public void messageReceived(String username_from, String message)
+    {
+        // aici trebuie sa mai vedem 
+    }
 }

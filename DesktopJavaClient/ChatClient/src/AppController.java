@@ -15,6 +15,7 @@ public class AppController
 {
     private MainController mainController = null;
     private ArrayList<Friend> friends;
+    private ArrayList<String> friendRequests;
     private UserData userData;
     
     public void setMainController(MainController controller)
@@ -27,10 +28,11 @@ public class AppController
         // aici parcurgem arrayList-ul ala si vedem care-s online is care nu :D 
     }
     
-    public void signInSucceeded(UserData userData, ArrayList<Friend> friends)
+    public void signInSucceeded(UserData userData, ArrayList<Friend> friends, ArrayList<String> friendRequests)
     {
         this.userData = userData;
         this.friends = friends;
+        this.friendRequests = friendRequests;
     }
     
     public void updateFriends(String username, boolean online)
@@ -38,5 +40,14 @@ public class AppController
         
     }
     
+    public void addFriendRequest(String username)
+    {
+        
+    }
+    
+    public void friendRequestFailed()
+    {
+        
+    }
     
 }

@@ -19,5 +19,18 @@ public class Friend
         this.online = online;
     }
     
+    public String getUsername()
+    {
+        return this.username;
+    }
     
+    public boolean isOnline()
+    {
+        return this.online;
+    }
+    
+    public void setOnlineState(boolean online)
+    {
+        this.online = online;
+    }
 }
