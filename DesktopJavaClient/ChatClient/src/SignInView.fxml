@@ -8,8 +8,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="356.0" prefWidth="298.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="356.0" prefWidth="298.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SignInController">
    <children>
       <ImageView fitHeight="97.0" fitWidth="298.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -21,8 +20,8 @@
       <TextField fx:id="signInUsername" layoutX="96.0" layoutY="108.0" />
       <PasswordField fx:id="signInPassword" layoutX="96.0" layoutY="143.0" />
       <Label fx:id="signInErrors" alignment="CENTER" layoutX="66.0" layoutY="192.0" textFill="#b52a2a" />
-      <Button fx:id="signInLogin" layoutX="29.0" layoutY="243.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="109.0" text="Sign in" />
-      <Button fx:id="signInRegister" layoutX="155.0" layoutY="243.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="109.0" text="Register" />
-      <Label fx:id="signInConnection" layoutX="66.0" layoutY="312.0" textFill="#b52a2a" />
+      <Button layoutX="29.0" layoutY="243.0" mnemonicParsing="false" onAction="#singInPressSingIn" prefHeight="44.0" prefWidth="109.0" text="Sign in" />
+      <Button layoutX="155.0" layoutY="243.0" mnemonicParsing="false" onAction="#singInPressRegister" prefHeight="44.0" prefWidth="109.0" text="Register" />
+      <Label fx:id="signInConnectionErrors" layoutX="66.0" layoutY="312.0" textFill="#b52a2a" />
    </children>
 </Pane>
