@@ -64,16 +64,23 @@ var connected = {};
 //---------------------socket.io stuff -----------------------------------------
 io.on('connection', function(socket){
 
-  console.log(socket);
 
   var index = socket.handshake.headers.cookie.indexOf('connect.sid=s%3A');
   index += 16;
 
   connected[socket.handshake.headers.cookie.substr(index,32)].socket = socket;
 
-  user = connected[socket.handshake.headers.cookie.substr(index,32)];
-  console.log(socket.handshake.headers.cookie.substr(index,32));
+  var user = connected[socket.handshake.headers.cookie.substr(index,32)];
 
+
+  for(var id in connected){
+    var friends = connected[id].friends;
+    for(var i = 0; i < friends.length; i++){
+      if(friends[i] == user._id){
+        connected[id].socket.emit("friend connected",friends[i]);
+      }
+    }
+  }
 
 
   socket.on('chat message', function(msg){
@@ -92,7 +99,17 @@ io.on('connection', function(socket){
   });
 
   socket.on('disconnect', function(){
-    //delete connected[socket.handshake.headers.cookie.substr(16,32)];
+    delete connected[socket.handshake.headers.cookie.substr(16,32)];
+
+    for(var id in connected){
+      var friends = connected[id].friends;
+      for(var i = 0; i < friends.length; i++){
+        if(friends[i] == user._id){
+          connected[id].socket.emit("friend disconnected",friends[i]);
+        }
+      }
+    }
+
     console.log('a iesit un sobolan');
   });
 
@@ -217,8 +234,22 @@ app.get("/friends",authenticatedOrNot,function(req,resp){
   usersManager.findUser({_id:user},function(err,res){
 
     var sends = res[0].friends;
-    console.log(sends);
-    resp.send(sends);
+    var obi = {
+      ob : {},
+      requests : {}
+    };
+
+    for(var i = 0; i < sends.length; i++){
+      obi.ob[sends[i]] = false;
+      for(var id in connected){
+        if(connected[id]._id == sends[i]){
+          obi.ob[sends[i]] = true;
+        }
+      }
+    }
+
+
+    resp.send(obi);
   });
 });
 
@@ -226,9 +257,9 @@ app.get("/user/:nume",function(req,resp){
   var name =  req.params.nume;
   usersManager.checkName(name,function(err,res){
     if(res.found == 0){
-      resp.send({succ : false});
+      resp.send({succ : false,connected: false});
     }else{
-      usersManager.makeFriends(connected[req.sessionID]._id,name,function(err,res){
+    /*  usersManager.makeFriends(connected[req.sessionID]._id,name,function(err,res){
         if(err){
           console.log(err);
         }else{
@@ -239,8 +270,30 @@ app.get("/user/:nume",function(req,resp){
             });
           });
         }
-      })
-      resp.send({succ : true});
+      })*/
+
+
+
+      var conn = false;
+
+
+      usersManager.addRequest(connected[req.sessionID]._id,name,function(err,res){
+        if(err){
+          console.log(err);
+        }else{
+          for(var id in connected){
+            if(connected[id]._id == name){
+              conn = true;
+              console.log("emit la " + connected[id]._id);
+              connected[id].socket.emit("new request",connected[req.sessionID]._id);
+            }
+          }
+
+        }
+      });
+
+
+      resp.send({succ : true,connected : conn});
     }
   });
 });
@@ -254,6 +307,24 @@ app.get("/pictures/:name",function(req,res){
 
 
 res.sendFile(__dirname + '/pictures/' + req.params.name );
+
+
+});
+
+app.get("/images/red.png",function(req,res){
+
+
+res.sendFile(__dirname + '/images/red.png');
+
+
+});
+
+
+
+app.get("/images/green.png",function(req,res){
+
+
+res.sendFile(__dirname + '/images/green.png');
 
 
 });
@@ -274,7 +345,7 @@ app.post("/register",function(req,res){
 
         us.picture = __dirname +'/pictures/' + us.name + ".png" ;
         console.log("ajung");
-      fs.writeFile(__dirname +'/pictures/' + us.name + "."+ext ,sampleFile.data,'binary',req.files.data,function(err,res){
+      fs.writeFile(us.picture,sampleFile.data,'binary',req.files.data,function(err,res){
         if(err){
           console.log("error write");
         }
