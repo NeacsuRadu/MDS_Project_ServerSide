@@ -64,7 +64,6 @@ var connected = {};
 //---------------------socket.io stuff -----------------------------------------
 io.on('connection', function(socket){
 
-  console.log(socket);
 
   var index = socket.handshake.headers.cookie.indexOf('connect.sid=s%3A');
   index += 16;
@@ -72,7 +71,7 @@ io.on('connection', function(socket){
   connected[socket.handshake.headers.cookie.substr(index,32)].socket = socket;
 
   var user = connected[socket.handshake.headers.cookie.substr(index,32)];
-  console.log(socket.handshake.headers.cookie.substr(index,32));
+
 
   for(var id in connected){
     var friends = connected[id].friends;
@@ -100,7 +99,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('disconnect', function(){
-    //delete connected[socket.handshake.headers.cookie.substr(16,32)];
+    delete connected[socket.handshake.headers.cookie.substr(16,32)];
 
     for(var id in connected){
       var friends = connected[id].friends;
@@ -235,19 +234,22 @@ app.get("/friends",authenticatedOrNot,function(req,resp){
   usersManager.findUser({_id:user},function(err,res){
 
     var sends = res[0].friends;
-    var ob = {};
+    var obi = {
+      ob : {},
+      requests : {}
+    };
 
     for(var i = 0; i < sends.length; i++){
-      ob[sends[i]] = false;
+      obi.ob[sends[i]] = false;
       for(var id in connected){
         if(connected[id]._id == sends[i]){
-          ob[sends[i]] = true;
+          obi.ob[sends[i]] = true;
         }
       }
     }
 
 
-    resp.send(ob);
+    resp.send(obi);
   });
 });
 
@@ -255,9 +257,9 @@ app.get("/user/:nume",function(req,resp){
   var name =  req.params.nume;
   usersManager.checkName(name,function(err,res){
     if(res.found == 0){
-      resp.send({succ : false});
+      resp.send({succ : false,connected: false});
     }else{
-      usersManager.makeFriends(connected[req.sessionID]._id,name,function(err,res){
+    /*  usersManager.makeFriends(connected[req.sessionID]._id,name,function(err,res){
         if(err){
           console.log(err);
         }else{
@@ -268,8 +270,30 @@ app.get("/user/:nume",function(req,resp){
             });
           });
         }
-      })
-      resp.send({succ : true});
+      })*/
+
+
+
+      var conn = false;
+
+
+      usersManager.addRequest(connected[req.sessionID]._id,name,function(err,res){
+        if(err){
+          console.log(err);
+        }else{
+          for(var id in connected){
+            if(connected[id]._id == name){
+              conn = true;
+              console.log("emit la " + connected[id]._id);
+              connected[id].socket.emit("new request",connected[req.sessionID]._id);
+            }
+          }
+
+        }
+      });
+
+
+      resp.send({succ : true,connected : conn});
     }
   });
 });

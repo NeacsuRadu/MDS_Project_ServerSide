@@ -54,7 +54,7 @@ crossorigin="anonymous">
 
 <p>
 welcome ,
-<b id= "user"><% if (name.length > 0) { %><%= name%><% } %></b>!
+<b id= "user"><% if (name.length > 0) { %><%= name%><% } %></b>!	   <a href='logout'>Log Out! </a>
 
 </p>
 
@@ -86,11 +86,21 @@ welcome ,
       </span>
     </div>
     <br>
+  <div class = "col-md-6">
+
+    <h4> Your Friends: </h4>
 
     <ul class="list-group lp">
     </ul>
+  </div>
 
-	   <a href='logout'>Log Out! </a>
+  <div class = "col-md-6">
+    <h4> Your Requests: </h4>
+    <ul class="list-group lr">
+    </ul>
+  </div>
+
+
   </div>
 
 </div>
@@ -109,11 +119,17 @@ $(function () {
     var friends = {};
 
     $.get('/friends',function(data){
-      var fr = data;
+      var fr = data.ob;
+      var rq = data.requests;
 
       for(var i in fr){
         var li = makeLI(i,fr[i]);
         $('.lp').append(li);
+      }
+
+      for(var i in rq){
+        var li = makeRE(i);
+        $('.lr').append(li);
       }
 
 
@@ -128,13 +144,18 @@ $(function () {
     });
 
 
+    socket.on("new request",function(friend){
+      newRequestHandler(friend);
+    });
+
+
     socket.on("friend connected",function(friend){
-      console.log(friend + "s a conectat");
+      userConnectedHandler(friend);
     });
 
 
     socket.on("friend disconnected",function(friend){
-      console.log(friend + "s a deconectat");
+      userDisconnectedHandler(friend);
     });
 
 
@@ -274,13 +295,8 @@ $(function () {
       var name = $('.searchf').val();
       $.get('/user/' + name, function(res){
         if(res.succ == true){
-          var img = document.createElement('img');
-
-          img.src = '/pictures/' +  name + ".png";
-
-          img.width = 30;
-          img.height = 30;
-          var li = $('<li class="list-group-item pb">').append(img).append(name);
+          console.log(res);
+          var li = makeLI(name,res.connected);
           $('.lp').append(li);
         }else{
           alert('no such user!');
@@ -305,7 +321,7 @@ function makeLI(name,on){
     col = "red";
   }
 
-
+  logged.className += "loggedStatus";
   logged.src = '/images/' + col + ".png";
   logged.height = 10;
   logged.width = 10;
@@ -318,6 +334,46 @@ function makeLI(name,on){
   var li = $('<li class="list-group-item pb">').append(imgAv).append(name).append(logged);
 
   return li;
+}
+
+function makeRE(name){
+  var imgAv = document.createElement('img');
+
+  imgAv.src = '/pictures/' +  name + ".png";
+
+  imgAv.width = 30;
+  imgAv.height = 30;
+  var li = $('<li class="list-group-item pb">').append(imgAv).append(name).append('<button type="button" class="btn btn-default accept" aria-label="Left Align">' +
+  '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' +
+  '</button>').append('<button type="button" class="btn btn-default decline" aria-label="Left Align">' +
+  '<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>' +
+  '</button>');
+
+  return li;
+}
+
+function newRequestHandler(friend){
+  console.log("da");
+  var li = makeRE(friend);
+  $('.lr').append(li);
+}
+
+function userConnectedHandler(friend){
+  $.each($(".lp li"),function(index,elem){
+
+    if($(elem).text() == friend){
+      $(elem).find(".loggedStatus").attr("src","/images/green.png");
+    }
+  });
+}
+
+function userDisconnectedHandler(friend){
+  $.each($(".lp li"),function(index,elem){
+
+    if($(elem).text() == friend){
+      $(elem).find(".loggedStatus").attr("src","/images/red.png");
+    }
+  });
 }
 
 </script>

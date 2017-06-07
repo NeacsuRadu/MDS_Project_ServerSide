@@ -109,6 +109,15 @@ usersManager.prototype.checkName = function(name, callback){
   });
 }
 
+usersManager.prototype.addRequest = function(user,name,callback){
+
+  this.users.update({_id : user},{$addToSet : {requests : name}},(err,res) =>{
+    callback(err,res);
+  });
+
+}
+
+
 usersManager.prototype.makeFriends = function(user,name,callback){
 
   this.users.update({_id : user},{$addToSet : {friends : name}},(err,res) =>{
@@ -121,7 +130,8 @@ usersManager.prototype.makeFriends = function(user,name,callback){
 usersManager.prototype.addUser = function(user, callback){
   this.users.insertOne({_id : user.name,
                     pw : user.pw,
-                    friends : []}, function(err, res){
+                    friends : [],
+                    requests : []}, function(err, res){
                                       if(err){
                                         callback(err,res);
                                       }else{
