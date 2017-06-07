@@ -17,8 +17,8 @@
 	 <label>Password:</label><br>
 	 <input type = "password"  id = "password" name = "password"/><br>
 	 <label>Picture:</label><p id = "fin"></p>
-	 <input type = "file"  id = "image" name = "image"/><br>
-
+ 		</br><div id = "loadedImage"></div></br>
+	</br><input type = "file"  id = "image" name = "image"/><br>
 	 <input type = "submit" value = "register" />
 
 	</form>
@@ -52,6 +52,11 @@ $(function () {
 				};
 
 				image.src = _URL.createObjectURL(file);
+
+				image.width = 40;
+				image.height = 40;
+
+				$("#loadedImage").append(image);
 
 
 		}

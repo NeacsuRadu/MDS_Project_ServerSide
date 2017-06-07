@@ -71,9 +71,17 @@ io.on('connection', function(socket){
 
   connected[socket.handshake.headers.cookie.substr(index,32)].socket = socket;
 
-  user = connected[socket.handshake.headers.cookie.substr(index,32)];
+  var user = connected[socket.handshake.headers.cookie.substr(index,32)];
   console.log(socket.handshake.headers.cookie.substr(index,32));
 
+  for(var id in connected){
+    var friends = connected[id].friends;
+    for(var i = 0; i < friends.length; i++){
+      if(friends[i] == user._id){
+        connected[id].socket.emit("friend connected",friends[i]);
+      }
+    }
+  }
 
 
   socket.on('chat message', function(msg){
@@ -93,6 +101,16 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function(){
     //delete connected[socket.handshake.headers.cookie.substr(16,32)];
+
+    for(var id in connected){
+      var friends = connected[id].friends;
+      for(var i = 0; i < friends.length; i++){
+        if(friends[i] == user._id){
+          connected[id].socket.emit("friend disconnected",friends[i]);
+        }
+      }
+    }
+
     console.log('a iesit un sobolan');
   });
 
@@ -217,8 +235,19 @@ app.get("/friends",authenticatedOrNot,function(req,resp){
   usersManager.findUser({_id:user},function(err,res){
 
     var sends = res[0].friends;
-    console.log(sends);
-    resp.send(sends);
+    var ob = {};
+
+    for(var i = 0; i < sends.length; i++){
+      ob[sends[i]] = false;
+      for(var id in connected){
+        if(connected[id]._id == sends[i]){
+          ob[sends[i]] = true;
+        }
+      }
+    }
+
+
+    resp.send(ob);
   });
 });
 
@@ -258,6 +287,24 @@ res.sendFile(__dirname + '/pictures/' + req.params.name );
 
 });
 
+app.get("/images/red.png",function(req,res){
+
+
+res.sendFile(__dirname + '/images/red.png');
+
+
+});
+
+
+
+app.get("/images/green.png",function(req,res){
+
+
+res.sendFile(__dirname + '/images/green.png');
+
+
+});
+
 app.post("/register",function(req,res){
     var us = {};
     us.name = req.body.username;
@@ -274,7 +321,7 @@ app.post("/register",function(req,res){
 
         us.picture = __dirname +'/pictures/' + us.name + ".png" ;
         console.log("ajung");
-      fs.writeFile(__dirname +'/pictures/' + us.name + "."+ext ,sampleFile.data,'binary',req.files.data,function(err,res){
+      fs.writeFile(us.picture,sampleFile.data,'binary',req.files.data,function(err,res){
         if(err){
           console.log("error write");
         }

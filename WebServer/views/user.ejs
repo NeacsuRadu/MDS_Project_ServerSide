@@ -111,38 +111,31 @@ $(function () {
     $.get('/friends',function(data){
       var fr = data;
 
-
-
-      var i;
-      //data[0] = the user (needed for image)
-      for(i = 0; i < fr.length; i++){
-        var src = fr[i];
-        friends[fr[i]] = {};
-        friends[fr[i]].src = fr[i];
-        var img = document.createElement('img');
-
-        img.src = '/pictures/' +  src + ".png";
-
-        img.width = 30;
-        img.height = 30;
-        var li = $('<li class="list-group-item pb">').append(img).append(fr[i]);
+      for(var i in fr){
+        var li = makeLI(i,fr[i]);
         $('.lp').append(li);
-
-
       }
-      console.log(fr);
 
 
-            var src = user;
-            var userImg = document.createElement('img');
-            if(src != undefined){
-              userImg.src = '/pictures/' +src;
-              userImg.width = 30;
-              userImg.height = 30;
-            }
+      var src = user;
+      var userImg = document.createElement('img');
+      if(src != undefined){
+        userImg.src = '/pictures/' +src+".png";
+        userImg.width = 30;
+        userImg.height = 30;
+      }
 
     });
 
+
+    socket.on("friend connected",function(friend){
+      console.log(friend + "s a conectat");
+    });
+
+
+    socket.on("friend disconnected",function(friend){
+      console.log(friend + "s a deconectat");
+    });
 
 
     socket.on("chat message", function(msg){
@@ -281,7 +274,14 @@ $(function () {
       var name = $('.searchf').val();
       $.get('/user/' + name, function(res){
         if(res.succ == true){
-          $('.lp').append('<li class="list-group-item pb">' + name +'</li>');
+          var img = document.createElement('img');
+
+          img.src = '/pictures/' +  name + ".png";
+
+          img.width = 30;
+          img.height = 30;
+          var li = $('<li class="list-group-item pb">').append(img).append(name);
+          $('.lp').append(li);
         }else{
           alert('no such user!');
         }
@@ -291,6 +291,35 @@ $(function () {
 
 
 });
+
+function makeLI(name,on){
+  var imgAv = document.createElement('img');
+
+
+  var logged = document.createElement('img');
+  var col;
+
+  if(on){
+    col = "green";
+  }else{
+    col = "red";
+  }
+
+
+  logged.src = '/images/' + col + ".png";
+  logged.height = 10;
+  logged.width = 10;
+
+
+  imgAv.src = '/pictures/' +  name + ".png";
+
+  imgAv.width = 30;
+  imgAv.height = 30;
+  var li = $('<li class="list-group-item pb">').append(imgAv).append(name).append(logged);
+
+  return li;
+}
+
 </script>
 
 </html>

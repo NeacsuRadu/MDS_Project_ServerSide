@@ -42,7 +42,7 @@ var initializer = function(){};
          _id     : --- string  (this is the name of the user!!! -- it is used as
                                 id for simplicity and for the unique constraint)
          pw      : --- string  (the password)
-         friends : --- object!   (string reprezenting friends)
+         friends : --- array!   (string reprezenting friends)
      }
     */
 
