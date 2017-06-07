@@ -2,28 +2,81 @@
 <!doctype html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
-    </style>
+    <title>Chat</title>
+	<link rel="stylesheet" type="text/css" href="Style.css"> 
+
   </head>
   <body>
-    <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
+	<div id="leftside">
+		<div id="menu">
+			<span id = "name"> Welcome! </span>
+			<div class = "tooltip">
+				<button id = "logout" class = "menuButton"></button>
+				<span class="tooltiptext"> Logout </span>
+			</div>
+			<div class = "tooltip">
+				<button id = "add" class = "menuButton"></button>
+				<span class="tooltiptext"> Add a contact </span>
+			</div>
+			<div class = "tooltip"> 
+				<button id = "settings" class = "menuButton"></button>
+				<span class="tooltiptext"> Change accound settings </span>
+			</div>
+		</div>
+		<div id="friends">
+			<ul id = "friendList">
+				<li> First Friend </li>
+				<li> Second friend </li>
+				<li> Another Friend </li>
+				<li> Another Friend </li>
+				<li> Another Friend </li>
+				<li> Another Friend </li>
+				<li> Another Friend </li>
+				<li> Last Friend </li>
+				<li> One More Friend </li>
+			</ul>
+		</div>
+	</div>
+	<div id="conversation">
+		<span>
+			<div id="messagesDiv">
+				<div id ="info"> firstName lastName </div>
+				<ul id="messages"></ul>
+			</div>
+			<div id="form">
+				<form action="">
+				  <input id="m" autocomplete="off" />
+				  <button id="sendButton"></button>
+				</form>
+			</div>
+		</span>
+	</div>
   </body>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
+$(function() {
+    var butt = $('#add');
+    var height = butt.height();
+    butt.css('width', height);
+	
+	butt = $('#logout');
+    height = butt.height();
+    butt.css('width', height);
+	
+	butt = $('#settings');
+    height = butt.height();
+    butt.css('width', height);
+	
+	butt = $('#sendButton');
+    height = butt.height();
+    butt.css('width', height);
+	
+	var form = $('#form');
+	var input = $('#m');
+	input.css('width', form.width() - butt.width() -10);
+});
 $(function () {
     var socket = io();
     $('form').submit(function(){

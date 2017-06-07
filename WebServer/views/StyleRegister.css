@@ -1,0 +1,37 @@
+body
+{
+	background: url(peisaj.jpg);
+	text-align: center;
+	vertical-align: middle;
+
+}
+
+#everything {
+    border-radius: 25px;
+	background: rgb(255, 255, 255); 
+	background: rgba(255, 255, 255, .5);
+	width: 350px;
+	height:500px;
+	
+	text-align: center;
+	vertical-align: middle;
+	line-height: 35px;
+	
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+	margin: auto;
+}
+
+input
+{
+    border-radius: 10px;
+}
+
+#button
+{
+	background-color: #006bb3;
+	border-color: #004d80;
+}
