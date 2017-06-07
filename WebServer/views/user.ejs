@@ -392,7 +392,7 @@ function newRequestHandler(friend){
 
 function userConnectedHandler(friend){
   $.each($(".lp li"),function(index,elem){
-    console.log(elem.text());
+    console.log($(elem).text());
     if($(elem).text() == friend){
       $(elem).find(".loggedStatus").attr("src","/images/green.png");
     }
@@ -401,7 +401,7 @@ function userConnectedHandler(friend){
 
 function userDisconnectedHandler(friend){
   $.each($(".lp li"),function(index,elem){
-    console.log(elem.text());
+    console.log($(elem).text());
     if($(elem).text() == friend){
       $(elem).find(".loggedStatus").attr("src","/images/red.png");
     }

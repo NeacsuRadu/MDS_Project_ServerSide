@@ -330,10 +330,13 @@ app.get("/make/:name",authenticatedOrNot,function(req,resp){
 
         var con = false;
 
+        connected[req.sessionID].friends.push(name);
+
         for(var id in connected){
           if(connected[id]._id == name){
             con = true;
             connected[id].socket.emit("user accept",connected[req.sessionID]._id);
+            connected[id].friends.push(connected[req.sessionID]._id);
           }
         }
       }
