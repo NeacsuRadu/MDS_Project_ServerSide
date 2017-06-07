@@ -23,7 +23,7 @@
       <PasswordField fx:id="registerRePassword" layoutX="135.0" layoutY="266.0" />
       <Button layoutX="24.0" layoutY="339.0" mnemonicParsing="false" onAction="#registerPressRegister" prefHeight="57.0" prefWidth="102.0" text="Register" />
       <Button layoutX="173.0" layoutY="339.0" mnemonicParsing="false" onAction="#registerPressSignIn" prefHeight="57.0" prefWidth="102.0" text="Sign In" />
-      <Label fx:id="registerErrors" layoutX="77.0" layoutY="308.0" textFill="#b52a2a" />
+      <Label fx:id="registerErrors" layoutX="30.0" layoutY="308.0" textFill="#b52a2a" />
       <ImageView fitHeight="104.0" fitWidth="327.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../register.gif" />
