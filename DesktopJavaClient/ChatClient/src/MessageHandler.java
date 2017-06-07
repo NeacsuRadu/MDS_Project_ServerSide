@@ -77,7 +77,7 @@ public class MessageHandler
         messageData.put("username", username);
         messageData.put("password", password);
         
-        message.put("type", SIGN_IN);
+        message.put("type", REGISTER);
         message.put("data", messageData);
         return message.toString();
     }

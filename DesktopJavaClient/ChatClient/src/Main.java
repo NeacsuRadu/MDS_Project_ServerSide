@@ -61,6 +61,7 @@ public class Main extends Application implements MainController
         registerLoader.setLocation(Main.class.getResource("RegisterView.fxml"));
         //mainLoader.setLocation(Main.class.getResource("MainView.fxml"));
         
+        JSONObject ob = new JSONObject();
         try
         {
             signInLoader = new FXMLLoader();
