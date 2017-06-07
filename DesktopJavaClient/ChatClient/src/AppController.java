@@ -47,13 +47,12 @@ public class AppController
         {
             mainController.sendMessage(MessageHandler.getInstance().getFriendRequestMessage(userData.getUsername(), name));
         }
-        
-        
     }
     
     public void mainSignOut(ActionEvent e)
     {
-        
+        mainController.sendMessage(MessageHandler.getInstance().getLogOutMessage(userData.getUsername()));
+        mainController.showSignInView();
     }
     
     public void setMainController(MainController controller)
@@ -101,12 +100,15 @@ public class AppController
     
     public void updateFriends(String username, boolean online)
     {
+        // avem 2 cazuri :) 
         
+        // username exista in friends: caz in care ii punem bulina 
+        // usernae nu exista: caz in care il adaugam si ii punem bulina 
     }
     
     public void addFriendRequest(String username)
     {
-        
+        // aici adaugam friend request s
     }
     
     public void friendRequestFailed()

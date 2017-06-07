@@ -56,38 +56,38 @@ public class Main extends Application implements MainController
         
         signInLoader = new FXMLLoader();
         registerLoader = new FXMLLoader();
-        //mainLoader = new FXMLLoader();
+        mainLoader = new FXMLLoader();
 
         signInLoader.setLocation(Main.class.getResource("SignInView.fxml"));
         registerLoader.setLocation(Main.class.getResource("RegisterView.fxml"));
-        //mainLoader.setLocation(Main.class.getResource("MainView.fxml"));
+        mainLoader.setLocation(Main.class.getResource("MainView.fxml"));
         
         JSONObject ob = new JSONObject();
         try
         {
             signInLoader = new FXMLLoader();
             registerLoader = new FXMLLoader();
-            //mainLoader = new FXMLLoader();
+            mainLoader = new FXMLLoader();
 
             signInLoader.setLocation(Main.class.getResource("SignInView.fxml"));
             registerLoader.setLocation(Main.class.getResource("RegisterView.fxml"));
-            //mainLoader.setLocation(Main.class.getResource("MainView.fxml"));
+            mainLoader.setLocation(Main.class.getResource("MainView.fxml"));
         
             Parent rootSignIn = signInLoader.load();
             Parent rootRegister = registerLoader.load();
-            //Parent rootMain = mainLoader.load();
+            Parent rootMain = mainLoader.load();
             
             signInScene = new Scene(rootSignIn);
             registerScene = new Scene(rootRegister);
-            //mainScene = new Scene(rootMain);
+            mainScene = new Scene(rootMain);
 
             signInController = signInLoader.getController();
             registerController = registerLoader.getController();
-            //appController = mainLoader.getController();
+            appController = mainLoader.getController();
 
             signInController.setMainController(this);
             registerController.setMainController(this);
-            //appController.setMainController(this);
+            appController.setMainController(this);
             
         }
         catch(IOException ex)
@@ -123,7 +123,7 @@ public class Main extends Application implements MainController
     public void showSignInView()
     {
         this.primaryStage.setScene(signInScene);
-        //this.signInController.initView();
+        this.signInController.initView();
         this.primaryStage.show();
     }
     
@@ -138,7 +138,7 @@ public class Main extends Application implements MainController
     @Override
     public void showAppView()
     {
-        //this.primaryStage.setScene(mainScene);
+        this.primaryStage.setScene(mainScene);
         this.appController.initView();
         this.primaryStage.show();
     }

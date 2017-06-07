@@ -184,11 +184,13 @@ public class MessageHandler
             }
             case REGISTER:
             {
+                System.out.println("REGISTER case");
                 JSONObject messageData = messageJSON.getJSONObject("data");
                 
                 boolean valid = messageData.getBoolean("valid");
                 if (valid)
                 {
+                    System.out.println("valid");
                     for (MainController handler : handlers)
                     {
                         handler.registerSucceded();
@@ -196,6 +198,7 @@ public class MessageHandler
                 }
                 else 
                 {
+                    System.out.println("invalid");
                     for (MainController handler : handlers)
                     {
                         handler.registerFailed();
@@ -205,6 +208,7 @@ public class MessageHandler
             }
             case UPDATE_FRIENDS:
             {
+                System.out.println("UPDATE_FRIENDS case");
                 JSONObject messageData = messageJSON.getJSONObject("data");
                 
                 String username = messageData.getString("username");
@@ -217,6 +221,7 @@ public class MessageHandler
             }
             case FRIEND_REQUEST:
             {
+                System.out.println("FRIEND_REQUEST case");
                 JSONObject messageData = messageJSON.getJSONObject("data");
                 
                 String username = messageData.getString("username");
@@ -224,16 +229,20 @@ public class MessageHandler
                 {
                     handler.addFriendRequest(username);
                 }
+                break;
             }
             case FRIEND_REQUEST_FAILED:
             {
+                System.out.println("FRIEND_REQUEST_FAILED case");
                 for (MainController handler : handlers)
                 {
                     handler.friendRequestFailed();
                 }
+                break;
             }
             case RECEIVE_MESSAGE:
             {
+                System.out.println("RECEIVE_MESSAGE case");
                 JSONObject messageData = messageJSON.getJSONObject("data");
                 
                 String username_from = messageData.getString("from");

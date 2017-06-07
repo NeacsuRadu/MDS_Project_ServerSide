@@ -493,6 +493,7 @@ net.createServer(function (socket){
 		var type = json.type;
         if (type == SIGNIN)
         {
+			console.log("signin");
             var username = json.data.username;
 			var password = json.data.password;
             var jsonResp = checkCredentials(username, password, socket, function(respJson)
@@ -503,6 +504,7 @@ net.createServer(function (socket){
 		}
 		else if (type == REGISTER)
 		{
+			console.log("register");
 			var username = json.data.username;
 			var password = json.data.password;
 			var firstname = json.data.firstname;
@@ -515,6 +517,7 @@ net.createServer(function (socket){
 		}
 		else if (type == LOGOUT)
 		{
+			console.log("logout");
 			var username = json.data.username;
 			
 			tellMyFriendsImGone(username, false);
@@ -523,6 +526,7 @@ net.createServer(function (socket){
 		}
 		else if (type == SEND_FRIEND_REQUEST)
 		{
+			console.log("send friend request ");
 			var username_from = json.data.from;
 			var username_to = json.data.to;
 			
@@ -530,9 +534,12 @@ net.createServer(function (socket){
 		}
 		else if (type == SEND_FRIEND_REQUEST_ANSWER)
 		{
+			console.log("send friend request answer");
 			var username_from = json.data.from;
 			var username_to = json.data.to;
 			var accept = json.data.accept;
+			
+			usersManager.deleteRequest(username_to, username_from, function(err, resp) {} );
 			
 			if (accept == true)
 			{
@@ -586,6 +593,7 @@ function checkCredentials(username, password, socket, callback)
 				desktopClients[username] = user;
 
 				var friendsArray = user.friends;
+				var requestArray = user.requests;
 				var jsonFriendsArray = [];
 				var jsonRequestArray = [];
 				for (var index = 0; index < friendsArray.length; index++)
@@ -601,6 +609,13 @@ function checkCredentials(username, password, socket, callback)
 						friend.online = false;
 					}
 					jsonFriendsArray.push(friend);
+				}
+				
+				for (var index = 0; index < requestArray.length; index++)
+				{
+					var request = {};
+					request.username = requestArray[index];
+					jsonRequestArray.push(request);
 				}
 	
 				tellMyFriendsImGone(username, true);
@@ -679,9 +694,6 @@ function getUpdateFriendsMessage(username, online)
 
 function sendFriendRequest(username_from, username_to)
 {
-	// TO OD :: add funcking request into the database 
-	
-	//
 	usersManager.checkName(username_to, function(err, resp)
 		{
 			if(resp.found == 0)
@@ -694,8 +706,10 @@ function sendFriendRequest(username_from, username_to)
 			}
 			else
 			{
+				usersManager.addRequest(username_to, username_from, function(err, res){});
 				if (desktopClients[username_to] != undefined)
 				{
+					console.log("Aici");
 					respJson = getFriendRequestMessage(username_from);
 					desktopClients[username_to].socket.write(JSON.stringify(respJson) + "\n");
 				}
