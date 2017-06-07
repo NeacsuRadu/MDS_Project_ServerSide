@@ -1,78 +1,69 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title> Register
-</title>
-<link rel="stylesheet" type="text/css" href="StyleRegister.css"> 
-</head>
-<body>
-	<div id="everything">
-		<form ref='uploadForm'
-			 id='uploadForm'
-			 action='/register'
-			 method='post'
-			 encType="multipart/form-data">
-		<div>	 
-		 <label>Username:</label>
-		 <input type = "text"  id = "username" name = "username"/>
+	<head>
+		<title> Register
+		</title>
+		<link rel="stylesheet" type="text/css" href="StyleRegister.css"> 
+	</head>
+	<body>
+		<div id="everything">
+			<form ref='uploadForm'
+					id='uploadForm'
+					action='/register'
+					method='post'
+					encType="multipart/form-data">
+				<div>	 
+					<label>Username:</label>
+					<input type = "text"  id = "username" name = "username"/>
+				</div>
+				<div>
+					<label>Password:</label>
+					<input type = "password"  id = "password" name = "password"/>
+				</div>
+				<div>
+					<label>Confirm password:</label>
+					<input type = "password"  id = "password2" name = "password2"/>
+				</div>
+				<div>
+					<label>Picture:</label>
+					<input type = "file"  id = "image" name = "image"/>
+					<p id = "fin"></p>
+				</div>
+				<input type = "submit" id="button" value = "register" />
+
+			</form>
 		</div>
-		<div>
-		 <label>Password:</label>
-		 <input type = "password"  id = "password" name = "password"/>
-		</div>
-		<div>
-		 <label>Confirm password:</label>
-		 <input type = "password"  id = "password" name = "password2"/>
-		</div>
-		<div>
-		 <label>Picture:</label>
-		 <input type = "file"  id = "image" name = "image"/>
-		 <p id = "fin"></p>
-		</div>
-		 <input type = "submit" id="button" value = "register" />
+	</body>
+	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script>
 
-		</form>
-	</div>
-</body>
-<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-<script>
+	$(function () {
+		var _URL = window.URL || window.webkitURL;
+		var ok = false;
+		$("#image").change(()=>{
+			var image;
+			var fileInput = $(this).find("input[type=file]")[0],
+				 file = fileInput.files && fileInput.files[0];
+			if (file) {
 
+					image = new Image();
 
+					image.onload = function() {
 
-$(function () {
-	var _URL = window.URL || window.webkitURL;
-	var ok = false;
-	$("#image").change(()=>{
-		var image;
-		var fileInput = $(this).find("input[type=file]")[0],
-			 file = fileInput.files && fileInput.files[0];
-		if (file) {
+							if(this.width > 800 || this.height > 500){
+								alert("Image too large");
+							}else if(this.size > 1024 * 1024){
+								alert("Image too big");
+							}
+					};
 
-				image = new Image();
+					image.src = _URL.createObjectURL(file);
 
-				image.onload = function() {
-
-						if(this.width > 800 || this.height > 500){
-							alert("Image too large");
-						}else if(this.size > 1024 * 1024){
-							alert('Image too big');
-						}else{
-							$('#fin').html('');
-						}
-				};
-
-				image.src = _URL.createObjectURL(file);
-
-
-		}
+			}
+		});
+		$("#password2").onchange(()=>{
+			alert("changed");
+		});
 	});
-	$("password2").change(()=>{
-		alert("changed");
-	});
-});
-
-
-</script>
-
-
+	</script>
 </html>
