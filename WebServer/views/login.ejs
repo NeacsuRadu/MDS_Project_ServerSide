@@ -1,43 +1,46 @@
  <!DOCTYPE html>
 <html>
 <head>
-<title>	<% if (m.length > 0) { %>
-		<%= me %>
-	<% }else{ %>
-		Login
-	<%  }%>
- </title>
+	<title>	<% if (m.length > 0) { %>
+			<%= m %>
+		<% }else{ %>
+			Login
+		<%  }%>
+	 </title>
 
-
+	<link rel="stylesheet" type="text/css" href="StyleLogin.css"> 
 
 </head>
 <body>
 
+	
 
-	<b>
-	<% if (m.length > 0) { %>
-		Incorrect username and/or password <br>
-		<%= m %>
-		<br>
-	<% } %>
-	</b>
+	<div id="everything">
+		<div id = "error">
+			
+			<% if (m.length > 0) { %>
+				Incorrect username and/or password
+				<%= m %>
+				<br>
+			<% } %>
+			
+		</div>
+		<form action = "/login" method = "post">
+			<div>
+			 <label>Username:</label>
+			 <input type = "text" name = "username"/>
+			</div>
+			<div>
+			 <label>Password:</label>
+			 <input type = "password" name = "password"/>
+			</div>
+			<div>
+			 <input type = "submit" id="button" value = "Log In" />
+			</div>
+		</form>
 
-
-	<form action = "/login" method = "post">
-	<div>
-	 <label>Username:</label>
-	 <input type = "text" name = "username"/>
+		<a href = "register">Register</a>
 	</div>
-	<div>
-	 <label>Password:</label>
-	 <input type = "password" name = "password"/>
-	</div>
-	<div>
-	 <input type = "submit" value = "Log In" />
-	</div>
-	</form>
-
-<a href = "register">Register</a>
 
 </body>
 

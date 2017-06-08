@@ -3,7 +3,7 @@
 	<head>
 		<title> Register
 		</title>
-		<link rel="stylesheet" type="text/css" href="StyleRegister.css"> 
+		<link rel="stylesheet" type="text/css" href="StyleRegister.css">
 	</head>
 	<body>
 		<div id="everything">
@@ -12,7 +12,7 @@
 					action='/register'
 					method='post'
 					encType="multipart/form-data">
-				<div>	 
+				<div>
 					<label>Username:</label>
 					<input type = "text"  id = "username" name = "username"/>
 				</div>
@@ -36,7 +36,24 @@
 	</body>
 	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 	<script>
-
+	
+	$("#uploadForm").submit(function( event ) {
+		var username = document.getElementById('username').value;
+		var pass = document.getElementById('password').value;
+		var pass2 = document.getElementById('password2').value;
+		if ( username=='' || pass =='' || pass2=='')
+		{
+			alert('All the fields are mandatory!');
+			event.preventDefault();
+		}
+		
+		if ( pass.localeCompare(pass2) !=0 )
+		{
+			alert('The passwords must match!');
+			event.preventDefault();
+		}
+	});
+	
 	$(function () {
 		var _URL = window.URL || window.webkitURL;
 		var ok = false;
@@ -60,9 +77,6 @@
 					image.src = _URL.createObjectURL(file);
 
 			}
-		});
-		$("#password2").onchange(()=>{
-			alert("changed");
 		});
 	});
 	</script>
