@@ -2,6 +2,34 @@
     pointer-events:none; //This makes it not clickable
     opacity:0.6;         //This grays it out to look disabled
 }
+ 
+#mesaje li .media {
+	margin: 3px;
+	
+}
+
+.media-body p {
+	border-radius:10px;
+	padding-left: 10px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	border-style: solid;
+	border-width: 2px;
+}
+
+.msg{
+	background-color: #99c2ff;
+	border-color: #337AB7;
+}
+
+.msgr.msg{
+	background-color: #f2f2f2;
+	border-color: #e6e6e6;
+}
+
+img {
+	border-radius: 30px;
+}
 
 body
 {
@@ -9,10 +37,15 @@ body
 }
 
 #yours, #requests, #hello{
-	min-height: 30px;
+	//min-height: 30px;
 	background: rgb(255, 255, 255); 
 	background: rgba(255, 255, 255, .5);
     border-radius: 5px;
+}
+
+#yours, #requests {
+	padding-bottom: 1px;
+	padding-top: 1px;
 }
 
 #hello{
