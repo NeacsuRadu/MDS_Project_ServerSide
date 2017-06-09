@@ -17,7 +17,6 @@ var url = 'mongodb://localhost:27017/test';
 
 var usersConnected = {};
 
-var requests = {};
 
 var db;
 var users;
@@ -67,12 +66,22 @@ var connected = {};
 io.on('connection', function(socket){
 
 
-  var index = socket.handshake.headers.cookie.indexOf('connect.sid=s%3A');
-  index += 16;
 
-  connected[socket.handshake.headers.cookie.substr(index,32)].socket = socket;
 
-  var user = connected[socket.handshake.headers.cookie.substr(index,32)];
+    var index = socket.handshake.headers.cookie.indexOf('connect.sid=s%3A');
+    index += 16;
+
+
+    if(connected[socket.handshake.headers.cookie.substr(index,32)] == undefined){
+      socket.disconnect();
+      return;
+    }
+
+    connected[socket.handshake.headers.cookie.substr(index,32)].socket = socket;
+
+    var user = connected[socket.handshake.headers.cookie.substr(index,32)];
+
+
 
 
   for(var id in connected){
@@ -101,7 +110,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('disconnect', function(){
-    delete connected[socket.handshake.headers.cookie.substr(16,32)];
+
 
     for(var id in connected){
       var friends = connected[id].friends;
@@ -152,26 +161,31 @@ app.set('view engine', 'ejs');
 passport.use(new LocalStrategy(
   function(username, password, done){
 
+    console.log("adasdas");
       var user ;
       usersManager.findUser({_id: username},function(err,res){
         user = res[0];
 
         if(user == undefined){
-            return done(null, false,{message : "Incorrect credentials." });
+            console.log("[wrong]")
+            done(null, false,{message : "Incorrect credentials." });
         }else{
 
         if(user._id == username){
           if(user.pw == password){
             usersConnected[username] = user;
-            return done(null, user);
+            done(null, user);
+          }else {
+            done(null, false,{message : "Incorrect credentials." });
           }
+        }else{
+          done(null, false,{message : "Incorrect credentials." });
         }
-
         }
 
       });
 
-
+      console.log("nu");
   }
 ));
 
@@ -201,7 +215,9 @@ passport.deserializeUser(function (userId, done) {
 
 //-----------------------express requests       --------------------------------
 app.get('/', authenticatedOrNot, function(req, res) {
-  usersConnected[req.user._id].session = req.sessionID;
+
+  console.log(req.sessionID);
+
   connected[req.sessionID] = req.user;
   console.log(req.sessionID + '\n' + req.sessionID.length);
   res.render(__dirname+'/views/user.ejs', {name : req.user._id});
@@ -289,9 +305,8 @@ app.get("/user/:nume",function(req,resp){
             if(connected[id]._id == name){
               conn = true;
               console.log("emit la " + connected[id]._id);
+              connected[id].requests.push(connected[req.sessionID]._id);
               connected[id].socket.emit("new request",connected[req.sessionID]._id);
-              requests[connected[req.sessionID]._id] = name;
-              console.log(requests);
             }
           }
 
@@ -304,19 +319,40 @@ app.get("/user/:nume",function(req,resp){
   });
 });
 
+app.get("/check/:name",function(req,res){
+  usersManager.checkName(req.params.name,function(err,resp){
+    if(err) res.send({found :0});
+    res.send({found:resp.found});
+  })
+})
 
+app.get("/user.js", function(req,res) {
+  res.sendFile(__dirname +"/views/js/user.js");
+});
+
+app.get("/login.js", function(req,res) {
+  res.sendFile(__dirname +"/views/js/login.js");
+});
+
+app.get("/register.js", function(req,res) {
+  res.sendFile(__dirname +"/views/js/register.js");
+});
 
 app.get("/StyleUser.css", function(req,res) {
-  res.sendFile(__dirname +"/views/StyleUser.css");
+  res.sendFile(__dirname +"/views/css/StyleUser.css");
 });
 
 app.get("/StyleRegister.css", function(req,res) {
-  res.sendFile(__dirname +"/views/StyleRegister.css");
+  res.sendFile(__dirname +"/views/css/StyleRegister.css");
+});
+
+app.get("/StyleLogin.css", function(req,res) {
+  res.sendFile(__dirname +"/views/css/StyleLogin.css");
 });
 
 
 app.get("/peisaj.jpg", function(req,res) {
-  res.sendFile(__dirname +"/views/peisaj.jpg");
+  res.sendFile(__dirname +"/views/images/peisaj.jpg");
 });
 
 
@@ -329,60 +365,59 @@ app.get("/register", function(req,res){
 
 app.get("/decline/:name",authenticatedOrNot,function(req,resp){
     var name = req.params.name;
-    if(!requests[name]){
-      resp.send({error : "No such request!"});
-      return;
-    }
-
-
-    delete requests[name];
-
-    usersManager.deleteRequest(connected[req.sessionID]._id,name,function(err,res){
-      if(err){
-        console.log(err);
-        resp.send({error : err});
-      }
-    });
-
-
-    for(var id in connected){
-      if(connected[id]._id == name){
-        connected[id].socket.emit("user decline",connected[req.sessionID]._id);
-      }
-    }
-
-
-  resp.send({
-  });
-
-});
-
-
-app.get("/make/:name",authenticatedOrNot,function(req,resp){
-    var name = req.params.name;
-
-    if(!requests[name]){
-      console.log(requests[name]+ "...." + requests[connected[req.sessionID]._id] + ".........." );
-      console.log(requests);
-      resp.send({error : "No such request!"});
-      return;
-    }
-
-    usersManager.makeFriends(connected[req.sessionID]._id,name,function(err,res){
-      if(err){
-        console.log(err);
-        resp.send({error : err});
-      }
-      else{
-
-        delete requests[name];
-
+    console.log("dec");
+    console.log(connected[req.sessionID]._id + "..." + name);
+    if(!requestExists(connected[req.sessionID]._id,name)){
+        resp.send({error : "No such request!"});
+        return;
+    }else{
         usersManager.deleteRequest(connected[req.sessionID]._id,name,function(err,res){
           if(err){
             console.log(err);
             resp.send({error : err});
           }
         });
+
+
+        for(var id in connected){
+          if(connected[id]._id == name){
+            connected[id].socket.emit("user decline",connected[req.sessionID]._id);
+          }
+        }
+
+
+        resp.send({
+        });
+
+      }
+
+
+});
+
+
+app.get("/make/:name",authenticatedOrNot,function(req,resp){
+    var name = req.params.name;
+    console.log(connected[req.sessionID]._id + "..." + name);
+    if(!requestExists(connected[req.sessionID]._id,name)){
+        resp.send({error : "No such request!"});
+        return;
+    }else{
+
+        usersManager.makeFriends(connected[req.sessionID]._id,name,function(err,res){
+          if(err){
+            console.log(err);
+            resp.send({error : err});
+          }
+          else{
+
+
+        usersManager.deleteRequest(connected[req.sessionID]._id,name,function(err,res){
+          if(err){
+            console.log(err);
+          }
+
+        });
+
 
         var con = false;
 
@@ -402,6 +437,9 @@ app.get("/make/:name",authenticatedOrNot,function(req,resp){
       });
 
     })
+  }
+
+
 });
 
 app.get("/pictures/:name",function(req,res){
@@ -434,8 +472,8 @@ app.post("/register",function(req,res){
     var us = {};
     us.name = req.body.username;
     us.pw = req.body.password;
-
-    console.log(req.files);
+    console.log("pw");
+    console.log(req.body.password);
 
     if (req.files){
 
@@ -497,6 +535,9 @@ app.get("/login.html",function(req,res){
 
 app.get("/logout", function(req, res){
     req.logout();
+    console.log("[DELETE]")
+    delete usersConnected[connected[req.sessionID]._id];
+
     res.redirect("/");
 });
 //-----------------------express requests       --------------------------------
@@ -517,6 +558,27 @@ function authenticatedOrNot(req, res, next){
     res.render(__dirname +"/views/login.ejs",{m : form});
   }
 }
+
+//check if a request from user1 to user2 exists;
+function requestExists(user2,user1){
+
+  for(var id in connected){
+    if(connected[id]._id == user2){
+      var reqs = connected[id].requests;
+      console.log(user2 + ":" + reqs);
+      for(var i = 0; i < reqs.length; i++){
+        console.log(reqs[i] + "...." + user1);
+        if(reqs[i] == user1){
+          console.log("asdasdsadasdsadsad");
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+
 //-----------------------helper functions --------------------------------------
 
 http.listen(9090);

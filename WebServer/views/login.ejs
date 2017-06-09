@@ -20,20 +20,19 @@
 		<div id = "error">
 
 			<% if (m.length > 0) { %>
-				Incorrect username and/or password
 				<%= m %>
 				<br>
 			<% } %>
 
 		</div>
-		<form action = "/login" method = "post">
+		<form action = "/login" method = "post" id = "log">
 			<div>
 			 <label>Username:</label>
 			 <input type = "text" name = "username"/>
 			</div>
 			<div>
 			 <label>Password:</label>
-			 <input type = "password" name = "password"/>
+			 <input type = "password" name = "password" id = "pw"/>
 			</div>
 			<div>
 			 <input type = "submit" id="button" value = "Log In" />
@@ -44,5 +43,6 @@
 	</div>
 
 </body>
-
+	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script src="/login.js"></script>
 </html>

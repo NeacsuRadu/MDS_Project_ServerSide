@@ -71,6 +71,7 @@ body
 
 #mesaje{
   height: 500px;
+
 }
 #prieteni{
   overflow-y: scroll;
@@ -97,10 +98,13 @@ body
 
 .msgr{
   float:right;
+width: 50x;
+word-break: break-all;
 }
 
 .msg{
   width: 50%;
+word-break: break-all;
 
 }
 
