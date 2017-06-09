@@ -1,11 +1,17 @@
 
 import java.util.ArrayList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -18,7 +24,7 @@ import javafx.scene.shape.Circle;
 
 /**
  *
- * @author Radu-Stefan Neacsu
+ * @author Alex
  */
 public class AppController 
 {
@@ -30,13 +36,13 @@ public class AppController
     @FXML
     private TextField mainFriendUsername;
     @FXML
-    private ListView<Pane> mainListView;
-    private ListView<Pane> mainFriendsRequests;
+    private ListView<Pane> mainListView, mainFriendsRequests;
     @FXML
     private Label mainErrors;
     
     public void mainAddFriend(ActionEvent e)
     {
+        mainErrors.setText("");
         String name = new String(mainFriendUsername.getText());
         
         if(name.equals(""))
@@ -47,13 +53,12 @@ public class AppController
         {
             mainController.sendMessage(MessageHandler.getInstance().getFriendRequestMessage(userData.getUsername(), name));
         }
-        
-        
     }
     
     public void mainSignOut(ActionEvent e)
     {
-        
+        mainController.sendMessage(MessageHandler.getInstance().getLogOutMessage(userData.getUsername()));
+        mainController.showSignInView();
     }
     
     public void setMainController(MainController controller)
@@ -66,6 +71,13 @@ public class AppController
         mainFriendUsername.setText("");
         mainErrors.setText("");
         
+        addFriendsInListView();
+        addFriendRequestInListView();
+        // aici parcurgem arrayList-ul ala si vedem care-s online is care nu :D 
+    }
+    
+    private void addFriendsInListView()
+    {
         for(int i = 0; i < friends.size(); i++)
         {
             Group group = new Group();
@@ -89,7 +101,6 @@ public class AppController
 
             mainListView.getItems().add(pane);
         }
-        // aici parcurgem arrayList-ul ala si vedem care-s online is care nu :D 
     }
     
     public void signInSucceeded(UserData userData, ArrayList<Friend> friends, ArrayList<String> friendRequests)
@@ -101,12 +112,80 @@ public class AppController
     
     public void updateFriends(String username, boolean online)
     {
+        Friend friend = new Friend(username, online);
+        boolean ok = true;
+        for(int i = 0; i < friends.size(); i++)
+        {
+            if(friends.get(i).equals(friend))
+            {
+                friends.get(i).setOnlineState(online);
+                ok = false;
+            }
+        }
+        if(ok)
+        {
+            friends.add(friend);
+        }
         
+        mainListView.getItems().clear();
+        addFriendsInListView();
+		
+        // avem 2 cazuri :) 
+        
+        // username exista in friends: caz in care ii punem bulina 
+        // username nu exista: caz in care il adaugam si ii punem bulina 
+    }
+    
+    private void addFriendRequestInListView()
+    {
+        for(int i = 0; i < friendRequests.size(); i++)
+        {
+            Group group = new Group();
+            Pane pane = new Pane(group);
+            Button button1 = new Button("Accept");
+            button1.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+            button1.setLayoutX(5);
+            button1.setLayoutY(0);
+            button1.setOnAction((event) -> 
+            {
+                String friendName = ((Button)event.getSource()).getParent().getChildrenUnmodifiable().get(2).getId();
+                //Facem ceva pentru Accept
+                friendRequests.remove(friendName);
+                mainFriendsRequests.getItems().clear();
+                addFriendRequestInListView();
+            });
+
+            group.getChildren().add(button1);
+
+            Button button2 = new Button("Reject");
+            button2.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+            button2.setLayoutX(60);
+            button2.setLayoutY(0);
+            button2.setOnAction((event) -> {
+                String friendName = new String (((Button)event.getSource()).getParent().getChildrenUnmodifiable().get(2).getId());
+                //Facem ceva pentru Reject
+                friendRequests.remove(friendName);
+                mainFriendsRequests.getItems().clear();
+                addFriendRequestInListView();
+            });
+            group.getChildren().add(button2);
+
+            Label label = new Label(friendRequests.get(i));
+            label.setId(friendRequests.get(i));
+            label.setLayoutX(130);
+            label.setLayoutY(0);
+            group.getChildren().add(label);
+
+            mainFriendsRequests.getItems().add(pane);
+        }
     }
     
     public void addFriendRequest(String username)
     {
-        
+        // aici adaugam friend requests
+        friendRequests.remove(username);
+        mainFriendsRequests.getItems().clear();
+        addFriendRequestInListView();
     }
     
     public void friendRequestFailed()

@@ -35,12 +35,19 @@ public class RegisterController
         String rePassword = new String(registerRePassword.getText());
         
         if(firstName.equals("") || lastName.equals("") || username.equals("")
-                || password.equals("") || rePassword.equals("") ||
-                !password.equals(rePassword)){
-            showRegistrationFailedError();
+                || password.equals("") || rePassword.equals("")){
+            showRegistrationFailedErrorEmptyField();
         }
         else{
-            mainController.sendMessage(MessageHandler.getInstance().getRegisterMessage(firstName, lastName, username, password));
+            if ( !password.equals(rePassword) ){
+                showRegistrationFailedErrorDifferentPasswords();
+                
+                registerPassword.setText("");
+                registerRePassword.setText("");
+            }
+            else{
+                mainController.sendMessage(MessageHandler.getInstance().getRegisterMessage(firstName, lastName, username, password));
+            }
         }
     }
     
@@ -69,7 +76,19 @@ public class RegisterController
     
     public void showRegistrationFailedError()
     {
-        registerErrors.setText("Register error! Please retype different informations!");
+        registerErrors.setText("Something went wrong! Please try again!");
+        initView();
+    }
+    
+    public void showRegistrationFailedErrorEmptyField()
+    {
+        registerErrors.setText("All the fields are mandatory!");
+    }
+    
+    
+    public void showRegistrationFailedErrorDifferentPasswords()
+    {
+        registerErrors.setText("Different passwords!");
     }
     
 }
