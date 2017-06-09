@@ -1,0 +1,106 @@
+.disabled {
+    pointer-events:none; //This makes it not clickable
+    opacity:0.6;         //This grays it out to look disabled
+}
+
+ 
+#mesaje li .media {
+	margin: 3px;
+	
+}
+
+.media-body p {
+	border-radius:10px;
+	padding-left: 10px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	border-style: solid;
+	border-width: 2px;
+}
+
+.msg{
+	background-color: #99c2ff;
+	border-color: #337AB7;
+}
+
+.msgr.msg{
+	background-color: #f2f2f2;
+	border-color: #e6e6e6;
+}
+
+img {
+	border-radius: 30px;
+}
+
+
+body
+{
+	background: url(peisaj.jpg);
+}
+
+#yours, #requests, #hello{
+
+	//min-height: 30px;
+
+	background: rgb(255, 255, 255); 
+	background: rgba(255, 255, 255, .5);
+    border-radius: 5px;
+}
+
+
+#yours, #requests {
+	padding-bottom: 1px;
+	padding-top: 1px;
+}
+
+
+#hello{
+	margin-bottom: 3px;
+	margin-left: 15px;
+	margin-right: 15px;
+	margin-top: 3px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 30px;
+}
+
+#logout{
+	float: right;
+	color: #3366cc;
+}
+
+#mesaje{
+  height: 500px;
+}
+#prieteni{
+  overflow-y: scroll;
+  height: 450px;
+}
+#tts{
+  width: 85%;
+  display: inline;
+}
+
+#send{
+  width: 11%;
+  margin-left: 2%;
+  text-align: center;
+}
+.lm{
+  height: 480px;
+  overflow-y: scroll;
+}
+
+#nume{
+  height: 4em;
+}
+
+.msgr{
+  float:right;
+}
+
+.msg{
+  width: 50%;
+
+}
+
