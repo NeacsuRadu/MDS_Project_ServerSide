@@ -304,6 +304,17 @@ app.get("/user/:nume",function(req,resp){
 });
 
 
+app.get("/StyleRegister.css", function(req,res) {
+  res.sendFile(__dirname +"/views/StyleRegister.css");
+});
+
+
+app.get("/peisaj.jpg", function(req,res) {
+  res.sendFile(__dirname +"/views/peisaj.jpg");
+});
+
+
+
 
 app.get("/register", function(req,res){
     res.sendFile(__dirname +"/views/register.html");
@@ -516,16 +527,16 @@ net.createServer(function (socket){
 		else if (type == LOGOUT)
 		{
 			var username = json.data.username;
-			
+
 			tellMyFriendsImGone(username, false);
-			
+
 			delete desktopClients[username];
 		}
 		else if (type == SEND_FRIEND_REQUEST)
 		{
 			var username_from = json.data.from;
 			var username_to = json.data.to;
-			
+
 			sendFriendRequest(username_from, username_to);
 		}
 		else if (type == SEND_FRIEND_REQUEST_ANSWER)
@@ -533,7 +544,7 @@ net.createServer(function (socket){
 			var username_from = json.data.from;
 			var username_to = json.data.to;
 			var accept = json.data.accept;
-			
+
 			if (accept == true)
 			{
 				desktopClients[username_from].friends.push(username_to);
@@ -602,7 +613,7 @@ function checkCredentials(username, password, socket, callback)
 					}
 					jsonFriendsArray.push(friend);
 				}
-	
+
 				tellMyFriendsImGone(username, true);
 
 				respData.valid = true;
@@ -630,7 +641,7 @@ function registerUser(username, password, callback)
 				usersManager.addUser(us, function(err,resp)
 					{
 						if(err)
-						{		
+						{
 							respData.valid = false;
 						}
 						else
@@ -653,7 +664,7 @@ function registerUser(username, password, callback)
 function tellMyFriendsImGone(username, online)
 {
 	var friendsArray = desktopClients[username].friends;
-	
+
 	for (var index = 0; index < friendsArray.length; index++)
 	{
 		if (desktopClients[friendsArray[index]] != undefined)
@@ -670,17 +681,17 @@ function getUpdateFriendsMessage(username, online)
 	var respData = {};
 	respData.username = username;
 	respData.online = online;
-	
+
 	resp.type = UPDATE_FRIENDS;
 	resp.data = respData;
-	
+
 	return resp;
 }
 
 function sendFriendRequest(username_from, username_to)
 {
-	// TO OD :: add funcking request into the database 
-	
+	// TO OD :: add funcking request into the database
+
 	//
 	usersManager.checkName(username_to, function(err, resp)
 		{
@@ -708,10 +719,10 @@ function getFriendRequestMessage(username)
 	var resp = {};
 	var respData = {};
 	respData.username = username;
-	
+
 	resp.type = FRIEND_REQUEST;
 	resp.data = respData;
-	
+
 	return resp;
 }
 
@@ -719,7 +730,6 @@ function getFriendRequestFailedMessage()
 {
 	var resp = {};
 	resp.type = FRIEND_REQUEST_FAILED;
-	
+
 	return resp;
 }
-

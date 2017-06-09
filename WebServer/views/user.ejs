@@ -363,6 +363,20 @@ $("body").on('click','.accept',function(ev){
 
 });
 
+$("body").on('click','.decline',function(ev){
+  console.log("daa2");
+  var name = $(this).parent().text();
+  $.each($(".lr li"),function(index,elem){
+
+    if($(elem).text() == name){
+      $(elem).parent().remove();
+    }
+  });
+
+
+});
+
+
 function makeRE(name){
   var imgAv = document.createElement('img');
 
