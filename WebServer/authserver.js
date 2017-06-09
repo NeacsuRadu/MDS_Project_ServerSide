@@ -291,6 +291,7 @@ app.get("/user/:nume",function(req,resp){
               console.log("emit la " + connected[id]._id);
               connected[id].socket.emit("new request",connected[req.sessionID]._id);
               requests[connected[req.sessionID]._id] = name;
+              console.log(requests);
             }
           }
 
@@ -303,6 +304,11 @@ app.get("/user/:nume",function(req,resp){
   });
 });
 
+
+
+app.get("/StyleUser.css", function(req,res) {
+  res.sendFile(__dirname +"/views/StyleUser.css");
+});
 
 app.get("/StyleRegister.css", function(req,res) {
   res.sendFile(__dirname +"/views/StyleRegister.css");
@@ -321,8 +327,47 @@ app.get("/register", function(req,res){
 });
 
 
+app.get("/decline/:name",authenticatedOrNot,function(req,resp){
+    var name = req.params.name;
+    if(!requests[name]){
+      resp.send({error : "No such request!"});
+      return;
+    }
+
+
+    delete requests[name];
+
+    usersManager.deleteRequest(connected[req.sessionID]._id,name,function(err,res){
+      if(err){
+        console.log(err);
+        resp.send({error : err});
+      }
+    });
+
+
+    for(var id in connected){
+      if(connected[id]._id == name){
+        connected[id].socket.emit("user decline",connected[req.sessionID]._id);
+      }
+    }
+
+
+  resp.send({
+  });
+
+});
+
+
 app.get("/make/:name",authenticatedOrNot,function(req,resp){
     var name = req.params.name;
+
+    if(!requests[name]){
+      console.log(requests[name]+ "...." + requests[connected[req.sessionID]._id] + ".........." );
+      console.log(requests);
+      resp.send({error : "No such request!"});
+      return;
+    }
+
     usersManager.makeFriends(connected[req.sessionID]._id,name,function(err,res){
       if(err){
         console.log(err);

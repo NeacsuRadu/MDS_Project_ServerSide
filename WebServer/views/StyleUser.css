@@ -1,0 +1,65 @@
+.disabled {
+    pointer-events:none; //This makes it not clickable
+    opacity:0.6;         //This grays it out to look disabled
+}
+
+body
+{
+	background: url(peisaj.jpg);
+}
+
+#yours, #requests, #hello{
+	min-height: 30px;
+	background: rgb(255, 255, 255); 
+	background: rgba(255, 255, 255, .5);
+    border-radius: 5px;
+}
+
+#hello{
+	margin-bottom: 3px;
+	margin-left: 15px;
+	margin-right: 15px;
+	margin-top: 3px;
+	text-align: center;
+	vertical-align: middle;
+	line-height: 30px;
+}
+
+#logout{
+	float: right;
+	color: #3366cc;
+}
+
+#mesaje{
+  height: 500px;
+}
+#prieteni{
+  overflow-y: scroll;
+  height: 450px;
+}
+#tts{
+  width: 85%;
+  display: inline;
+}
+
+#send{
+  width: 11%;
+  margin-left: 2%;
+  text-align: center;
+}
+.lm{
+  height: 480px;
+  overflow-y: scroll;
+}
+
+#nume{
+  height: 4em;
+}
+
+.msgr{
+  float:right;
+}
+
+.msg{
+  width: 50%;
+}
