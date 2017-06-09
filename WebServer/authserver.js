@@ -550,9 +550,9 @@ net.createServer(function (socket){
 			var username_to = json.data.to;
 			var accept = json.data.accept;
 
-			
+
 			usersManager.deleteRequest(username_to, username_from, function(err, resp) {} );
-			
+
 
 			if (accept == true)
 			{
@@ -624,14 +624,14 @@ function checkCredentials(username, password, socket, callback)
 					jsonFriendsArray.push(friend);
 				}
 
-				
+
 				for (var index = 0; index < requestArray.length; index++)
 				{
 					var request = {};
 					request.username = requestArray[index];
 					jsonRequestArray.push(request);
 				}
-	
+
 
 				tellMyFriendsImGone(username, true);
 
