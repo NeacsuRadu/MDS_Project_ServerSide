@@ -4,6 +4,8 @@
 		<title> Register
 		</title>
 		<link rel="stylesheet" type="text/css" href="StyleRegister.css">
+
+
 	</head>
 	<body>
 		<div id="everything">
@@ -24,6 +26,12 @@
 					<label>Confirm password:</label>
 					<input type = "password"  id = "password2" name = "password2"/>
 				</div>
+
+				<div id="img">
+
+				</div>
+	
+
 				<div>
 					<label>Picture:</label>
 					<input type = "file"  id = "image" name = "image"/>
@@ -35,49 +43,5 @@
 		</div>
 	</body>
 	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-	<script>
-	
-	$("#uploadForm").submit(function( event ) {
-		var username = document.getElementById('username').value;
-		var pass = document.getElementById('password').value;
-		var pass2 = document.getElementById('password2').value;
-		if ( username=='' || pass =='' || pass2=='')
-		{
-			alert('All the fields are mandatory!');
-			event.preventDefault();
-		}
-		
-		if ( pass.localeCompare(pass2) !=0 )
-		{
-			alert('The passwords must match!');
-			event.preventDefault();
-		}
-	});
-	
-	$(function () {
-		var _URL = window.URL || window.webkitURL;
-		var ok = false;
-		$("#image").change(()=>{
-			var image;
-			var fileInput = $(this).find("input[type=file]")[0],
-				 file = fileInput.files && fileInput.files[0];
-			if (file) {
-
-					image = new Image();
-
-					image.onload = function() {
-
-							if(this.width > 800 || this.height > 500){
-								alert("Image too large");
-							}else if(this.size > 1024 *1024 * 1024){
-								alert("Image too big");
-							}
-					};
-
-					image.src = _URL.createObjectURL(file);
-
-			}
-		});
-	});
-	</script>
+	<script src="/register.js"></script>
 </html>
