@@ -42,6 +42,7 @@ public class ChatWindow
             Parent root = fxmlLoader.load();
             chatController = fxmlLoader.getController();
             chatController.setMainController(main);
+            chatController.setUsernameController(username);
             
             stage.setTitle(username);
             stage.initModality(Modality.NONE);

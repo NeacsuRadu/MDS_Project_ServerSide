@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -39,6 +40,19 @@ public class AppController
     private ListView<Pane> mainListView, mainFriendsRequests;
     @FXML
     private Label mainErrors;
+    
+    {
+        mainListView.setOnMouseClicked(new EventHandler<MouseEvent>() 
+        {
+            @Override
+            public void handle(MouseEvent event) 
+            {
+                System.out.println("clicked on " + mainListView.getSelectionModel().getSelectedItem());
+                mainController.openWindowOrSetFocus(mainListView.getSelectionModel().getSelectedItem().getId());
+            }
+        });
+    }
+    
     
     public void mainAddFriend(ActionEvent e)
     {
@@ -102,7 +116,8 @@ public class AppController
             label.setLayoutX(14);
             label.setLayoutY(-4);
             group.getChildren().add(label);
-
+            group.setId(friends.get(i).getUsername());
+            
             mainListView.getItems().add(pane);
         }
     }
@@ -204,4 +219,10 @@ public class AppController
         }
         return false;
     }
+    
+    public String getUsername()
+    {
+        return userData.getUsername();
+    }
+    
 }
