@@ -45,7 +45,8 @@ public class AppController
         mainErrors.setText("");
         String name = new String(mainFriendUsername.getText());
         
-        if(name.equals(""))
+        if(name.equals("") || 
+           friendAlreayExists(name))
         {
             friendRequestFailed();
         }
@@ -70,6 +71,9 @@ public class AppController
     {
         mainFriendUsername.setText("");
         mainErrors.setText("");
+        
+        mainListView.getItems().clear();
+        mainFriendsRequests.getItems().clear();
         
         addFriendsInListView();
         addFriendRequestInListView();
@@ -116,7 +120,7 @@ public class AppController
         boolean ok = true;
         for(int i = 0; i < friends.size(); i++)
         {
-            if(friends.get(i).equals(friend))
+            if(friends.get(i).getUsername().equals(username))
             {
                 friends.get(i).setOnlineState(online);
                 ok = false;
@@ -129,11 +133,6 @@ public class AppController
         
         mainListView.getItems().clear();
         addFriendsInListView();
-		
-        // avem 2 cazuri :) 
-        
-        // username exista in friends: caz in care ii punem bulina 
-        // username nu exista: caz in care il adaugam si ii punem bulina 
     }
     
     private void addFriendRequestInListView()
@@ -149,7 +148,7 @@ public class AppController
             button1.setOnAction((event) -> 
             {
                 String friendName = ((Button)event.getSource()).getParent().getChildrenUnmodifiable().get(2).getId();
-                //Facem ceva pentru Accept
+                mainController.sendMessage(MessageHandler.getInstance().getFriendRequestAnswerMessage(userData.getUsername(), friendName, true));
                 friendRequests.remove(friendName);
                 mainFriendsRequests.getItems().clear();
                 addFriendRequestInListView();
@@ -163,7 +162,7 @@ public class AppController
             button2.setLayoutY(0);
             button2.setOnAction((event) -> {
                 String friendName = new String (((Button)event.getSource()).getParent().getChildrenUnmodifiable().get(2).getId());
-                //Facem ceva pentru Reject
+                mainController.sendMessage(MessageHandler.getInstance().getFriendRequestAnswerMessage(userData.getUsername(), friendName, false));
                 friendRequests.remove(friendName);
                 mainFriendsRequests.getItems().clear();
                 addFriendRequestInListView();
@@ -182,8 +181,11 @@ public class AppController
     
     public void addFriendRequest(String username)
     {
-        // aici adaugam friend requests
-        friendRequests.remove(username);
+        if (friendRequests.contains(username))
+        {
+            return;
+        }
+        friendRequests.add(username);
         mainFriendsRequests.getItems().clear();
         addFriendRequestInListView();
     }
@@ -193,4 +195,13 @@ public class AppController
         mainErrors.setText("Request failed!");
     }
     
+    public boolean friendAlreayExists(String username)
+    {
+        for (int i = 0; i < friends.size(); ++i)
+        {
+            if (friends.get(i).getUsername().equals(username))
+                return true;
+        }
+        return false;
+    }
 }

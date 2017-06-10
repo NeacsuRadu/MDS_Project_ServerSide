@@ -227,7 +227,8 @@ public class MessageHandler
                 String username = messageData.getString("username");
                 for (MainController handler : handlers)
                 {
-                    handler.addFriendRequest(username);
+                    //handler.addFriendRequest(username);
+                    handler.messageReceived(username, " ");
                 }
                 break;
             }

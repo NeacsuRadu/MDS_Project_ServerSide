@@ -525,6 +525,10 @@ http.listen(9090);
 
 var net = require('net');
 
+var OFFLINE = 0;
+var DESKTOP = 1;
+var BROWSER = 2;
+
 var SIGNIN 						= 1;
 var REGISTER 					= 2;
 var UPDATE_FRIENDS 				= 3;
@@ -549,9 +553,9 @@ net.createServer(function (socket){
 		var type = json.type;
         if (type == SIGNIN)
         {
-			console.log("signin");
             var username = json.data.username;
 			var password = json.data.password;
+			console.log("New sign in attempt with credentials: " + username + " and " + password);
             var jsonResp = checkCredentials(username, password, socket, function(respJson)
 			{
 				console.log(respJson);
@@ -560,11 +564,11 @@ net.createServer(function (socket){
 		}
 		else if (type == REGISTER)
 		{
-			console.log("register");
 			var username = json.data.username;
 			var password = json.data.password;
 			var firstname = json.data.firstname;
 			var lastname = json.data.lastname;
+			console.log("New register attempt with username: " + username );
 			var jsonResp = registerUser(username, password, function(respJson)
 			{
 				console.log(respJson);
@@ -582,33 +586,39 @@ net.createServer(function (socket){
 		}
 		else if (type == SEND_FRIEND_REQUEST)
 		{
-			console.log("send friend request ");
 			var username_from = json.data.from;
 			var username_to = json.data.to;
+			console.log("Friend request sent from: " + username_from + " to: " + username_to);
 
 			sendFriendRequest(username_from, username_to);
 		}
 		else if (type == SEND_FRIEND_REQUEST_ANSWER)
 		{
-			console.log("send friend request answer");
 			var username_from = json.data.from;
 			var username_to = json.data.to;
 			var accept = json.data.accept;
+			console.log("Friend request answer from: " + username_from + " to:" + username_to + " accept: " + accept);
 
-
-			usersManager.deleteRequest(username_to, username_from, function(err, resp) {} );
-
+			usersManager.deleteRequest(username_from, username_to, function(err, resp) {} );
 
 			if (accept == true)
 			{
-				desktopClients[username_from].friends.push(username_to);
+				addFriend(username_from, username_to, DESKTOP);
 				usersManager.makeFriends(username_from, username_to, function(err, res) {} );
-				if (desktopClients[username_to] != undefined)
+				
+				var userStatus = isOnline(username_to);
+				if (userStatus != OFFLINE)
 				{
-					desktopClients[username_to].friends.push(username_from);
+					addFriend(username_to, username_from, userStatus);
 					var respJson = getUpdateFriendsMessage(username_from, true);
-					desktopClients[username_to].socket.write(JSON.stringify(respJson) + "\n");
+					sendMessage(username_to, JSON.stringify(respJson) + "\n", userStatus);
 				}
+				var respJson = getUpdateFriendsMessage(username_to, userStatus != OFFLINE);
+				sendMessage(username_from, JSON.stringify(respJson) + "\n", DESKTOP);
+			}
+			else 
+			{
+				// nothing momentan, trebuie sa facem un pop-up sau ceva in client :) 
 			}
 		}
     });
@@ -628,6 +638,51 @@ net.createServer(function (socket){
 }).listen(43210);
 
 console.log("Server listening on 43210 port !!");
+
+function isOnline (username) // common function  
+{ 
+	if (desktopClients[username] != undefined) 
+	{
+		return DESKTOP;
+	}
+	return OFFLINE;
+}
+
+function sendMessage(username, message, type)
+{
+	if (type == DESKTOP)
+	{
+		desktopClients[username].socket.write(message);
+	}
+	else if (type == BROWSER)
+	{
+		// send message to browser client, george need to to this :) hi george
+	}
+}
+
+function addFriendRequest(username_to, username_from, type)
+{
+	if (type == DESKTOP)
+	{
+		desktopClients[username_to].requests.push(username_from);
+	}
+	else if (type == BROWSER)
+	{
+		// add friend to the browser client, george need to do this  :) hi george
+	}
+}
+
+function addFriend(username, friend_username, type) 
+{
+	if (type == DESKTOP)
+	{
+		desktopClients[username].friends.push(friend_username);
+	}
+	else if (type == BROWSER)
+	{
+		
+	}
+}
 
 function checkCredentials(username, password, socket, callback)
 {
@@ -657,7 +712,7 @@ function checkCredentials(username, password, socket, callback)
 				for (var index = 0; index < friendsArray.length; index++)
 				{
 					var friend = {};
-					friend.username = friendsArrayp[index];
+					friend.username = friendsArray[index];
 					if (desktopClients[friendsArray[index]] != undefined)
 					{
 						friend.online = true;
@@ -759,20 +814,22 @@ function sendFriendRequest(username_from, username_to)
 		{
 			if(resp.found == 0)
 			{
-				if (desktopClients[username_from] != undefined)
+				var userStatus = isOnline(username_from);
+				if (userStatus != OFFLINE) 
 				{
 					respJson = getFriendRequestFailedMessage();
-					desktopClients[username_from].socket.write(JSON.stringify(respJson) + "\n");
+					sendMessage( username_from, JSON.stringify(respJson) + "\n", userStatus);
 				}
 			}
 			else
 			{
 				usersManager.addRequest(username_to, username_from, function(err, res){});
-				if (desktopClients[username_to] != undefined)
+				var userStatus = isOnline(username_to);
+				if (userStatus != OFFLINE)
 				{
-					console.log("Aici");
 					respJson = getFriendRequestMessage(username_from);
-					desktopClients[username_to].socket.write(JSON.stringify(respJson) + "\n");
+					addFriendRequest(username_to, username_from, userStatus);
+					sendMessage(username_to, JSON.stringify(respJson) + "\n", userStatus);
 				}
 			}
 		});

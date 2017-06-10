@@ -15,7 +15,7 @@ import javafx.scene.control.TextArea;
  */
 public class ChatController 
 {
-    
+    private MainController mainController;
     
     @FXML 
     private TextArea chatHistory, chatMessage;
@@ -23,5 +23,10 @@ public class ChatController
     public void chatPressSendMessage(ActionEvent e)
     {
         
+    }
+    
+    public void setMainController(MainController mainController)
+    {
+        this.mainController = mainController;
     }
 }

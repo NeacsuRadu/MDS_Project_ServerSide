@@ -6,6 +6,7 @@
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -36,6 +37,8 @@ public class Main extends Application implements MainController
     
     private ClientSocket clientSocket = null;
     
+    private HashMap<String, ChatWindow> windowsMap;
+    
     @Override
     public void start(Stage stage) throws Exception 
     {
@@ -48,10 +51,37 @@ public class Main extends Application implements MainController
         showSignInView();
     }
     
+    public synchronized Stage getStage()
+    {
+        return this.primaryStage;
+    }
+    
+    public synchronized void showMessage(String username_from, String message)
+    {
+        if (windowsMap.containsKey(username_from) == false) // inca nu a fost creata fereastra
+        {
+            ChatWindow window = new ChatWindow(username_from, this);
+            if (window.createWindow() == true)
+            {
+                window.getController().showMessage(message, username_from);
+                windowsMap.put(username_from, window);
+            }
+        }
+        else 
+        {
+            ChatWindow window = windowsMap.get(username_from);
+            if (window != null)
+            {
+                window.getController().showMessage(message, username_from);
+            }
+        }
+    }
+    
     boolean initialize()
     {
         boolean bRes = true;
         
+        windowsMap = new HashMap();
         MessageHandler.getInstance().addHandler(this);
         
         signInLoader = new FXMLLoader();
@@ -219,6 +249,9 @@ public class Main extends Application implements MainController
     @Override
     public void messageReceived(String username_from, String message)
     {
-        // aici trebuie sa mai vedem 
+        Platform.runLater(()->
+        {
+            showMessage(username_from, message);
+        }); 
     }
 }
