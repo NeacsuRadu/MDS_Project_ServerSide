@@ -149,6 +149,12 @@ public class Main extends Application implements MainController
     
     // ------ MAIN CONTROLLER IMPLEMENTATION ------ //
     
+    @Override
+    public String getUsername()
+    {
+        return appController.getUsername();
+    }
+    
     @Override 
     public void openWindowOrSetFocus(String username)
     {

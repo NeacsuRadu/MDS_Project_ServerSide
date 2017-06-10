@@ -38,4 +38,7 @@ public interface MainController
     public void friendRequestFailed();
     
     public void messageReceived(String username_from, String message);
+    
+    public void openWindowOrSetFocus(String username);
+    public String getUsername();
 }
