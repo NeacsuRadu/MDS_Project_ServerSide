@@ -29,4 +29,9 @@ public class ChatController
     {
         this.mainController = mainController;
     }
+    
+    public void showMessage(String message, String username_from)
+    {
+        
+    }
 }

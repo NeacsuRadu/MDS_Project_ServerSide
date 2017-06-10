@@ -68,7 +68,7 @@ public class MessageHandler
         return message.toString();
     }
     
-    public String getRegisterMessage(String firstName, String lastName, String username, String password)
+    public String getRegisterMessage(String firstName, String lastName, String username, int password)
     {
         JSONObject message = new JSONObject();
         JSONObject messageData = new JSONObject();
@@ -227,8 +227,7 @@ public class MessageHandler
                 String username = messageData.getString("username");
                 for (MainController handler : handlers)
                 {
-                    //handler.addFriendRequest(username);
-                    handler.messageReceived(username, " ");
+                    handler.addFriendRequest(username);
                 }
                 break;
             }

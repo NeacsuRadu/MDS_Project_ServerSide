@@ -2,20 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/Radu-Stefan%20Neacsu/Desktop/MDS/MDS_Project_ServerSide/DesktopJavaClient/ChatClient/src/AppController.java</file>
-            <file>file:/C:/Users/Radu-Stefan%20Neacsu/Desktop/MDS/MDS_Project_ServerSide/DesktopJavaClient/ChatClient/src/SignInController.java</file>
-            <file>file:/C:/Users/Radu-Stefan%20Neacsu/Desktop/MDS/MDS_Project_ServerSide/DesktopJavaClient/ChatClient/src/RegisterController.java</file>
-            <file>file:/C:/Users/Radu-Stefan%20Neacsu/Desktop/MDS/MDS_Project_ServerSide/DesktopJavaClient/ChatClient/src/UserData.java</file>
-            <file>file:/C:/Users/Radu-Stefan%20Neacsu/Desktop/MDS/MDS_Project_ServerSide/DesktopJavaClient/ChatClient/src/ChatController.java</file>
-            <file>file:/C:/Users/Radu-Stefan%20Neacsu/Desktop/MDS/MDS_Project_ServerSide/DesktopJavaClient/ChatClient/src/ClientSocket.java</file>
-            <file>file:/C:/Users/Radu-Stefan%20Neacsu/Desktop/MDS/MDS_Project_ServerSide/DesktopJavaClient/ChatClient/src/MessageListener.java</file>
-            <file>file:/C:/Users/Radu-Stefan%20Neacsu/Desktop/MDS/MDS_Project_ServerSide/DesktopJavaClient/ChatClient/src/SignInView.fxml</file>
-            <file>file:/C:/Users/Radu-Stefan%20Neacsu/Desktop/MDS/MDS_Project_ServerSide/DesktopJavaClient/ChatClient/src/MessageHandler.java</file>
-            <file>file:/C:/Users/Radu-Stefan%20Neacsu/Desktop/MDS/MDS_Project_ServerSide/DesktopJavaClient/ChatClient/src/MainController.java</file>
-            <file>file:/C:/Users/Radu-Stefan%20Neacsu/Desktop/MDS/MDS_Project_ServerSide/DesktopJavaClient/ChatClient/src/Main.java</file>
-            <file>file:/C:/Users/Radu-Stefan%20Neacsu/Desktop/MDS/MDS_Project_ServerSide/DesktopJavaClient/ChatClient/src/Friend.java</file>
-            <file>file:/C:/Users/Radu-Stefan%20Neacsu/Desktop/MDS/MDS_Project_ServerSide/DesktopJavaClient/ChatClient/src/RegisterView.fxml</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>
