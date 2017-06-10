@@ -122,7 +122,7 @@ public class Main extends Application implements MainController
         }
         catch(IOException ex)
         {
-            System.out.println("Initialize error " + ex.getMessage());
+            System.out.println("Initialize error " + ex.getMessage() + ex.getStackTrace() + ex.getLocalizedMessage() + ex.toString());
             bRes = false;
         }     
         

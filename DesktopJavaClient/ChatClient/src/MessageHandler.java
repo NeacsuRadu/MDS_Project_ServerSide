@@ -48,6 +48,7 @@ public class MessageHandler
     final private int SEND_FRIEND_REQUEST_ANSWER = 5;
     final private int SEND_MESSAGE = 8;
     final private int LOGOUT = 10;
+    final private int GET_CONVERSATION = 11;
     
     final private int FRIEND_REQUEST = 6;
     final private int FRIEND_REQUEST_FAILED = 7;
@@ -127,6 +128,18 @@ public class MessageHandler
         messageData.put("message", messageString);
         
         message.put("type", SEND_MESSAGE);
+        message.put("data", messageData);
+        return message.toString();
+    }
+    
+    public String getRequestConversationMessage(String username_from, String username_to)
+    {
+        JSONObject message = new JSONObject();
+        JSONObject messageData = new JSONObject();
+        messageData.put("from", username_from);
+        messageData.put("to", username_to);
+        
+        message.put("type", GET_CONVERSATION);
         message.put("data", messageData);
         return message.toString();
     }
@@ -252,6 +265,12 @@ public class MessageHandler
                 {
                     handler.messageReceived(username_from, message);
                 }
+                break;
+            }
+            case GET_CONVERSATION:
+            {
+                System.out.println("GET_CONVERSATION case");
+                JSONObject messageData = messageJSON.getJSONObject("data");
                 break;
             }
             default:

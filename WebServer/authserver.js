@@ -683,6 +683,22 @@ net.createServer(function (socket){
 				// nothing momentan, trebuie sa facem un pop-up sau ceva in client :) 
 			}
 		}
+		else if (type == SEND_MESSAGE)
+		{
+			var username_from = json.data.from;
+			var username_to = json.data.to;
+			var message = json.data.message;
+			
+			console.log("Sending message from: " + username_from + " to: " + username_to + " message: " + message);
+			
+			var userStatus = isOnline(username_to);
+			if (userStatus != OFFLINE)
+			{
+				var respJson = getReceiveMessageJson(username_from, username_to, message);
+				sendMessage(username_to, JSON.stringify(respJson) + "\n", userStatus);
+			}
+			// add the message into the dataBase 
+		}
     });
 
     socket.on("end", function (){
@@ -914,5 +930,19 @@ function getFriendRequestFailedMessage()
 	var resp = {};
 	resp.type = FRIEND_REQUEST_FAILED;
 
+	return resp;
+}
+
+function getReceiveMessageJson(username_from, username_to, message)
+{
+	var resp = {};
+	var respData = {};
+	respData.from = username_from;
+	respData.to = username_to;
+	respData.message = message;
+	
+	resp.type = RECEIVE_MESSAGE;
+	resp.data = respData;
+	
 	return resp;
 }
