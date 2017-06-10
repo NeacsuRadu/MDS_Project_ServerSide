@@ -63,4 +63,11 @@ public class ChatWindow
     {
         return this.chatController;
     }
+    
+    public void requestFocus()
+    {
+        if (stage.isFocused())
+            return;
+        stage.requestFocus();
+    }
 }

@@ -150,6 +150,24 @@ public class Main extends Application implements MainController
     // ------ MAIN CONTROLLER IMPLEMENTATION ------ //
     
     @Override 
+    public void openWindowOrSetFocus(String username)
+    {
+        if (windowsMap.containsKey(username) == false)
+        {
+            ChatWindow window = new ChatWindow(username, this);
+            if (window.createWindow() == true)
+            {
+                windowsMap.put(username, window);
+            }
+        }
+        else 
+        {
+            ChatWindow window = windowsMap.get(username);
+            window.requestFocus();
+        }
+    }
+    
+    @Override 
     public void showSignInView()
     {
         this.primaryStage.setScene(signInScene);
