@@ -56,7 +56,7 @@ public class MessageHandler
     
     // ------ SENDING MESSAGES ------ // 
     
-    public String getSignInMessage(String username, String password)
+    public String getSignInMessage(String username, int password)
     {
         JSONObject message = new JSONObject();
         JSONObject messageData = new JSONObject();
