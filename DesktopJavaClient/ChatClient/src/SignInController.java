@@ -39,7 +39,8 @@ public class SignInController
         }
         else
         {
-            mainController.sendMessage(MessageHandler.getInstance().getSignInMessage(username, password));
+            int passwordEnc = passwordEncryption(password);
+            mainController.sendMessage(MessageHandler.getInstance().getSignInMessage(username, passwordEnc));
         }
     }
     
@@ -65,6 +66,23 @@ public class SignInController
     public void showSignInFailedError()
     {
         signInErrors.setText("Username or password is incorrect!");
+    }
+    
+    private int passwordEncryption(String password)
+    {
+        int hash = 0;
+        char chr;
+        if (password.length() == 0) 
+        {
+            return hash;
+        }
+        for (int i = 0; i < password.length(); i++) 
+        {
+          chr = password.charAt(i);
+          hash  = ((hash << 5) - hash) + chr;
+          hash |= 0; // Convert to 32bit integer
+        }
+        return hash;
     }
     
 }
