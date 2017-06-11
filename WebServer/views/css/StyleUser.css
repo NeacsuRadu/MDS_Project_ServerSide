@@ -35,13 +35,14 @@ img {
 
 body
 {
-	background: url(images/peisaj.jpg);
+	//background: url(images/peisaj.jpg);
+	background-color: #8080ff;
 }
 
 #yours, #requests, #hello{
 
 	//min-height: 30px;
-
+	
 	background: rgb(255, 255, 255); 
 	background: rgba(255, 255, 255, .5);
     border-radius: 5px;

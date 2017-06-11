@@ -4,7 +4,8 @@
 		<title> Register
 		</title>
 		<link rel="stylesheet" type="text/css" href="css/StyleRegister.css">
-
+		<meta name="viewport" content="width=device-width" />
+		
 
 	</head>
 	<body>
@@ -14,16 +15,16 @@
 					action='/register'
 					method='post'
 					encType="multipart/form-data">
-				<div>
-					<label>Username:</label>
+				<div class="idk">
+					<label>Username:</label><br>
 					<input type = "text"  id = "username" name = "username"/>
 				</div>
-				<div>
-					<label>Password:</label>
+				<div class="idk">
+					<label>Password:</label><br>
 					<input type = "password"  id = "password" name = "password"/>
 				</div>
-				<div>
-					<label>Confirm password:</label>
+				<div class="idk">
+					<label>Confirm password:</label><br>
 					<input type = "password"  id = "password2" name = "password2"/>
 				</div>
 
@@ -32,7 +33,7 @@
 				</div>
 	
 
-				<div>
+				<div class="idk">
 					<label>Picture:</label>
 					<input type = "file"  id = "image" name = "image"/>
 					<p id = "fin"></p>
