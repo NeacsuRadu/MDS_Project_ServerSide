@@ -58,23 +58,8 @@ public class Main extends Application implements MainController
     
     public synchronized void showMessage(String username_from, String message)
     {
-        if (windowsMap.containsKey(username_from) == false) // inca nu a fost creata fereastra
-        {
-            ChatWindow window = new ChatWindow(username_from, this);
-            if (window.createWindow() == true)
-            {
-                window.getController().showMessage(message, username_from);
-                windowsMap.put(username_from, window);
-            }
-        }
-        else 
-        {
-            ChatWindow window = windowsMap.get(username_from);
-            if (window != null)
-            {
-                window.getController().showMessage(message, username_from);
-            }
-        }
+        openWindowOrSetFocus(username_from);
+        windowsMap.get(username_from).getController().showMessage(message);
     }
     
     boolean initialize()
@@ -153,6 +138,15 @@ public class Main extends Application implements MainController
     public String getUsername()
     {
         return appController.getUsername();
+    }
+    
+    @Override
+    public void removeWindow(String username)
+    {
+        if (windowsMap.containsKey(username))
+        {
+            windowsMap.remove(username);
+        }
     }
     
     @Override 
