@@ -603,6 +603,16 @@ function requestExists(user2,user1){
       }
     }
   }
+
+  if(desktopClients[user2] != undefined){
+    var reqs = desktopClients[user2].requests;
+    for(var i = 0; i < reqs.length; i++){
+      if(reqs[i] == user1){
+        return true;
+      }
+    }
+  }
+
   return false;
 }
 
@@ -701,7 +711,7 @@ net.createServer(function (socket){
 				var userStatus = isOnline(username_to);
 				if (userStatus.type == DESKTOP)
 				{
-					
+
 				}
 				else if (userStatus.type == BROWSER)
 				{
@@ -725,7 +735,7 @@ net.createServer(function (socket){
 			}
 			else if (userStatus.type == BROWSER)
 			{
-			
+
 			}
 		}
 
@@ -923,10 +933,10 @@ function tellMyFriendsImGone(username, online, type)
 			var respJson = getUpdateFriendsMessage(username, online);
   			desktopClients[friendsArray[index]].socket.write(JSON.stringify(respJson) + "\n");
 		}
-		else if (userStatus.type == BROWSER) 
+		else if (userStatus.type == BROWSER)
 		{
 			if( online == true )
-			{	
+			{
 				status.socket.emit("friend connected", username);
 			}
 			else
@@ -973,7 +983,7 @@ function getUpdateFriendsMessage(username, online, type)
 {
 	var resp = {};
 	var respData = {};
-	
+
 	respData.username = username;
 	respData.online = online;
 
@@ -991,7 +1001,7 @@ function sendFriendRequest(username_from, username_to)
 			if(resp.found == 0)
 			{
 				var userStatus = isOnline(username_from);
-				if (userStatus.type == DESKTOP) 
+				if (userStatus.type == DESKTOP)
 				{
 					respJson = getFriendRequestFailedMessage();
 					sendMessage( username_from, JSON.stringify(respJson) + "\n", userStatus);
