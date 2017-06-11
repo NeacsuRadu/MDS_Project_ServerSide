@@ -49,6 +49,7 @@ public class MessageHandler
     final private int SEND_MESSAGE = 8;
     final private int LOGOUT = 10;
     final private int GET_CONVERSATION = 11;
+    final private int FRIEND_REQUEST_DECLINED = 12;
     
     final private int FRIEND_REQUEST = 6;
     final private int FRIEND_REQUEST_FAILED = 7;
@@ -123,8 +124,8 @@ public class MessageHandler
     {
         JSONObject message = new JSONObject();
         JSONObject messageData = new JSONObject();
-        messageData.put("from", username_from);
         messageData.put("to", username_to);
+        messageData.put("from", username_from);
         messageData.put("message", messageString);
         
         message.put("type", SEND_MESSAGE);
@@ -270,7 +271,37 @@ public class MessageHandler
             case GET_CONVERSATION:
             {
                 System.out.println("GET_CONVERSATION case");
-                JSONObject messageData = messageJSON.getJSONObject("data");
+                JSONArray messages = messageJSON.getJSONArray("messages");
+                
+                ArrayList<Message> arrayOfMessages = new ArrayList();
+                for (int i = 0; i < messages.length(); ++i)
+                {
+                    JSONObject messJs = messages.getJSONObject(i);
+                    Message mess = new Message();
+                    mess.from = messJs.getString("from");
+                    mess.to = messJs.getString("to");
+                    mess.message = messJs.getString("message");
+                    arrayOfMessages.add(mess);
+                }
+                String username_to = messageJSON.getString("to");
+                for (MainController handler : handlers)
+                {
+                    handler.updateConversation(username_to, arrayOfMessages);
+                }
+                
+                break;
+            }
+            case FRIEND_REQUEST_DECLINED:
+            {
+                System.out.println("FRIEND_REQ_DECL case");
+                
+                String username_from = messageJSON.getString("username");
+                
+                for (MainController handler: handlers)
+                {
+                    handler.showFriendRequestDeclinedPopup(username_from);
+                }
+                
                 break;
             }
             default:

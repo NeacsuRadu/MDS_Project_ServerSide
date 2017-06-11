@@ -47,6 +47,8 @@ var FRIEND_REQUEST_FAILED 		= 7;
 var SEND_MESSAGE 				= 8;
 var RECEIVE_MESSAGE 			= 9;
 var LOGOUT 						= 10;
+var GET_CONVERSATION 			= 11;
+var FRIEND_REQUEST_DECLINED		= 12;
 
 var desktopClients = {};
 
@@ -119,14 +121,15 @@ io.on('connection', function(socket){
 
   socket.on('chat message', function(msg){
 
-	console.log("Mesajul de la browser este" + JSON.stringify(msg));
+	console.log("Mesajul de la browser este" + JSON.stringify(msg)); 
+	msg.date = new Date();
 
     messagesManager.addMessages([msg],function(err,res){
 
-      var userStatus = ifOnline(msg.to);
+      var userStatus = isOnline(msg.to);
       if (userStatus.type == DESKTOP)
       {
-        var respJson = getReceiveMessageJson();
+        var respJson = getReceiveMessageJson(msg.from, msg.to, msg.message);
         sendMessage(msg.to, JSON.stringify(respJson) + "\n", DESKTOP);
       }
       else if (userStatus.type == BROWSER)
@@ -411,7 +414,8 @@ app.get("/decline/:name",authenticatedOrNot,function(req,resp){
 		var status = isOnline(name);
 
 		if(status.type == DESKTOP){
-
+			var respJson = getDeclineMessage(connected[req.sessionID]._id);
+			sendMessage(name, JSON.stringify(respJson) + "\n" , DESKTOP);
 		}else if(status.type == BROWSER){
 			status.socket.emit("user decline",connected[req.sessionID]._id);
 
@@ -717,7 +721,6 @@ net.createServer(function (socket){
 				else if (userStatus.type == BROWSER)
 				{
 					addFriend(username_to, username_from, userStatus.type);
-					userStatus.socket.emit("user accept", username_from);
 				}
 				var respJson = getUpdateFriendsMessage(username_to, userStatus != OFFLINE);
 				sendMessage(username_from, JSON.stringify(respJson) + "\n", DESKTOP);
@@ -727,7 +730,8 @@ net.createServer(function (socket){
 				var userStatus = isOnline(username_to);
 				if (userStatus.type == DESKTOP)
 				{
-					console.log("user declined : " + username_from);
+					var respJson = getDeclineMessage(username_from);
+					sendMessage(username_to, JSON.stringify(respJson) + "\n", DESKTOP);
 				}
 				else if (userStatus.type == BROWSER)
 				{
@@ -758,6 +762,32 @@ net.createServer(function (socket){
 			{
 				userStatus.socket.emit("chat message", json.data);
 			}
+		}
+		else if (type == GET_CONVERSATION)
+		{
+			var username_from = json.data.from;
+			var username_to = json.data.to;
+			
+			messagesManager.getMessages({to: username_to, from: username_from}, function(err, res){
+			
+				var arrayOfMessages = [];
+				for (var index = 0; index < res.length; index++)
+				{
+					var message = {};
+					message.from = res[index].from;
+					message.to = res[index].to;
+					message.message = res[index].message;
+					arrayOfMessages.push(message);
+				}
+				
+				var resp = {};
+				resp.type = GET_CONVERSATION;
+				resp.messages = arrayOfMessages;
+				resp.to = username_to;
+				
+				sendMessage(username_from, JSON.stringify(resp) + "\n", DESKTOP);
+			});
+		
 		}
 
     });
@@ -1080,5 +1110,14 @@ function getReceiveMessageJson(username_from, username_to, message)
 	resp.type = RECEIVE_MESSAGE;
 	resp.data = respData;
 
+	return resp;
+}
+
+function getDeclineMessage(username)
+{
+	var resp = {};
+	resp.type = FRIEND_REQUEST_DECLINED;
+	resp.username = username;
+	
 	return resp;
 }
