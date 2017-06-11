@@ -805,7 +805,7 @@ function addFriend(username, friend_username, type)
 	else if (type == BROWSER)
 	{
     for(var id in connected){
-      if(connected[id]._id == name){
+      if(connected[id]._id == username){
         connected[id].socket.emit("user accept",friend_username);
         connected[id].friends.push(friend_username);
       }
@@ -941,7 +941,7 @@ function tellMyFriendsImGone(username, online, type)
 
       /*friend connected username*/
       for(var id in connected){
-        if(connected[id]._id == usernane){
+        if(connected[id]._id == username){
           user = connected[id];
         }
       }
