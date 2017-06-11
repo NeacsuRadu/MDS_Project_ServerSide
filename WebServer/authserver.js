@@ -111,7 +111,7 @@ io.on('connection', function(socket){
     var user = connected[socket.handshake.headers.cookie.substr(index,32)];
 
 
-    // !! Tell My friends Im gone!!!!!
+    tellMyFriendsImGone(user._id, true, BROWSER);
 
 
 
@@ -327,15 +327,14 @@ app.get("/user/:nume",function(req,resp){
         if(err){
           console.log(err);
         }else{
-          for(var id in connected){
-            if(connected[id]._id == name){
-              conn = true;
-              console.log("emit la " + connected[id]._id);
-              connected[id].requests.push(connected[req.sessionID]._id);
-              connected[id].socket.emit("new request",connected[req.sessionID]._id);
-            }
+          var status = isOnline(name);
+          if(status.type == BROWSER){
+            addFriendRequest(name, connected[req.sessionID]._id, BROWSER);
+          }else if(status.type == DESKTOP){
+            var resp = getFriendRequestMessage(connected[req.sessionID]._id);
+            sendMessage(name, JSON.stringify(resp) + "\n", DESKTOP);
+            addFriendRequest(name, connected[req.sessionID]._id, DESKTOP);
           }
-
         }
       });
 
@@ -449,13 +448,16 @@ app.get("/make/:name",authenticatedOrNot,function(req,resp){
 
         connected[req.sessionID].friends.push(name);
 
-        for(var id in connected){
-          if(connected[id]._id == name){
-            con = true;
-            connected[id].socket.emit("user accept",connected[req.sessionID]._id);
-            connected[id].friends.push(connected[req.sessionID]._id);
-          }
+        var status = isOnline(name);
+
+        if(status.type == DESKTOP){
+          addFriend(name,connected[req.sessionID]._id,DESKTOP);
+          con = true;
+        }else if(status.type == BROWSER){
+          addFriend(name,connected[req.sessionID]._id,BROWSER);
+          conn = true;
         }
+
       }
 
       resp.send({
@@ -757,7 +759,7 @@ function sendMessage(username, message, type)
 	}
 	else if (type == BROWSER)
 	{
-		// send message to browser client, george need to to this :) hi george
+
 	}
 }
 
@@ -769,7 +771,13 @@ function addFriendRequest(username_to, username_from, type)
 	}
 	else if (type == BROWSER)
 	{
-		// add friend to the browser client, george need to do this  :) hi george
+    for(var id in connected){
+      if(connected[id]._id == username_to){
+        connected[id].requests.push(username_from);
+        connected[id].socket.emit("new request", username_from);
+      }
+    }
+
 	}
 }
 
@@ -781,7 +789,12 @@ function addFriend(username, friend_username, type)
 	}
 	else if (type == BROWSER)
 	{
-
+    for(var id in connected){
+      if(connected[id]._id == name){
+        connected[id].socket.emit("user accept",friend_username);
+        connected[id].friends.push(friend_username);
+      }
+    }
 	}
 }
 
@@ -922,7 +935,7 @@ function tellMyFriendsImGone(username, online, type)
           if( online == true ){
             status.socket.emit("friend connected", username);
           }else{
-            status.socket.emit("friend disconnect", username);
+            status.socket.emit("friend disconnected", username);
           }
         }
       }
