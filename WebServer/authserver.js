@@ -459,8 +459,8 @@ app.get("/make/:name",authenticatedOrNot,function(req,resp){
 
         if(status.type == DESKTOP){
           addFriend(name,connected[req.sessionID]._id,DESKTOP);
-		  var respp = getUpdateFriendsMessage(connected[req.sessionID]._id, true);
-		  sendMessage(name, JSON.stringify(respp) + "\n", DESKTOP);
+    		  var respp = getUpdateFriendsMessage(connected[req.sessionID]._id, true);
+    		  sendMessage(name, JSON.stringify(respp) + "\n", DESKTOP);
           con = true;
         }else if(status.type == BROWSER){
           addFriend(name,connected[req.sessionID]._id,BROWSER);
