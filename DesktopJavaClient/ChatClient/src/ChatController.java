@@ -1,4 +1,5 @@
 
+import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.NodeOrientation;
@@ -48,6 +49,23 @@ public class ChatController
         }
         writeUserLine(message);
         mainController.sendMessage(MessageHandler.getInstance().getSendMessageMessage(mainController.getUsername(), friendUsername, message));
+    }
+    
+    public void updateConversation(ArrayList<Message> ar)
+    {
+        System.out.println("Friend username: " + this.friendUsername);
+        for (int i = 0; i < ar.size(); ++i)
+        {
+            System.out.println("Just username: " + ar.get(i).to);
+            if (ar.get(i).to.equals(this.friendUsername))
+            {
+                this.writeUserLine(ar.get(i).message);
+            }
+            else 
+            {
+                this.writeFriendLine(ar.get(i).message);
+            }
+        }
     }
     
     public void setMainController(MainController mainController)

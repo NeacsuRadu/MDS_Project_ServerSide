@@ -178,6 +178,24 @@ messagesManager.prototype.getNthSetOfMessages = function(antet,nth,callback){
                     if(err){
                       callback(err,res);
                     }else{
+						  
+					  /*for (var index = 0; index < res.length; index++)
+					  {
+						  console.log(res[index].date + " " + res[index].message);
+					  }*/
+					  
+					  res.sort(function(a, b)
+					  {
+						  if (a.date < b.date) { return -1; }
+						  if (a.date > b.date) { return 1; }
+						  return 0;
+					  })
+					 /* console.log("....");
+					  for (var index = 0; index < res.length; index++)
+					  {
+						  console.log(res[index].date + " " + res[index].message);
+					  }*/
+						
                       callback(err,res);
                     }
                   });

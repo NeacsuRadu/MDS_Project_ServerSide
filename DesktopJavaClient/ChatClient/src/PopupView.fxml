@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="124.0" prefWidth="306.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111" fx:controller="PopupController">
+   <children>
+      <Label fx:id="textLabel" layoutX="97.0" layoutY="28.0" prefHeight="21.0" prefWidth="115.0" text="Label" />
+      <Label layoutX="45.0" layoutY="62.0" prefHeight="21.0" prefWidth="220.0" text="  Declined your friend request" />
+   </children>
+</AnchorPane>

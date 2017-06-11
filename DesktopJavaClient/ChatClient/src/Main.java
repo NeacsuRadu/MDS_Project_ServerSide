@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 
@@ -58,8 +59,10 @@ public class Main extends Application implements MainController
     
     public synchronized void showMessage(String username_from, String message)
     {
-        openWindowOrSetFocus(username_from);
-        windowsMap.get(username_from).getController().showMessage(message);
+        if (openWindowOrSetFocus(username_from) == false)
+        {
+            windowsMap.get(username_from).getController().showMessage(message);
+        }
     }
     
     boolean initialize()
@@ -132,6 +135,32 @@ public class Main extends Application implements MainController
         launch(args);
     }
     
+    public void showPopup(String username)
+    {
+        try
+        {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("PopupView.fxml"));
+            Parent root = loader.load();
+            PopupController controller = loader.getController();
+            controller.setLabelText(username);
+            
+            Scene scene = new Scene(root);
+            Stage stage = new Stage();
+            stage.setTitle("Info");
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(primaryStage);
+            stage.setScene(scene);
+            stage.show();
+
+        }
+        catch(IOException ex)
+        {
+            System.out.println("Cannot show the popup");
+        }
+        
+    }
+    
     // ------ MAIN CONTROLLER IMPLEMENTATION ------ //
     
     @Override
@@ -150,7 +179,7 @@ public class Main extends Application implements MainController
     }
     
     @Override 
-    public void openWindowOrSetFocus(String username)
+    public boolean openWindowOrSetFocus(String username)
     {
         if (windowsMap.containsKey(username) == false)
         {
@@ -159,11 +188,14 @@ public class Main extends Application implements MainController
             {
                 windowsMap.put(username, window);
             }
+            sendMessage(MessageHandler.getInstance().getRequestConversationMessage( appController.getUsername(), username));
+            return true;
         }
         else 
         {
             ChatWindow window = windowsMap.get(username);
             window.requestFocus();
+            return false;
         }
     }
     
@@ -261,6 +293,27 @@ public class Main extends Application implements MainController
         Platform.runLater(()->
         {
             appController.friendRequestFailed();
+        });
+    }
+    
+    @Override
+    public void updateConversation(String username, ArrayList<Message> ar)
+    {
+        Platform.runLater(()->
+        {
+            if (windowsMap.containsKey(username))
+            {
+                windowsMap.get(username).getController().updateConversation(ar);
+            }
+        });
+    }
+    
+    @Override
+    public void showFriendRequestDeclinedPopup(String username)
+    {
+        Platform.runLater(()->
+        {
+            showPopup(username);
         });
     }
     
