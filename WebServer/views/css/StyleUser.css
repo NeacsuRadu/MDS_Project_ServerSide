@@ -79,7 +79,6 @@ body
   height: 450px;
 }
 #tts{
-  width: 85%;
   display: inline;
 }
 
@@ -96,6 +95,8 @@ body
 #nume{
   height: 4em;
 }
+
+
 
 .msgr{
   float:right;
