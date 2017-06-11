@@ -653,7 +653,7 @@ net.createServer(function (socket){
 
 			if (desktopClients[username] != undefined)
 			{
-				tellMyFriendsImGone(username, false);
+				tellMyFriendsImGone(username, false, DESKTOP);
 				delete desktopClients[username];
 			}
 		}
@@ -849,7 +849,7 @@ function checkCredentials(username, password, socket, callback)
 				}
 
 
-				tellMyFriendsImGone(username, true);
+				tellMyFriendsImGone(username, true, DESKTOP);
 
 				respData.valid = true;
 				respData.username = username;
