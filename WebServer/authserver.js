@@ -123,14 +123,15 @@ io.on('connection', function(socket){
 
     messagesManager.addMessages([msg],function(err,res){
 
-
-
-      for(var id in connected){
-
-        if(connected[id]._id == msg.to){
-          connected[id].socket.emit("chat message",msg);
-
-        }
+      var userStatus = ifOnline(msg.to);
+      if (userStatus.type == DESKTOP)
+      {
+        var respJson = getReceiveMessageJson();
+        sendMessage(msg.to, JSON.stringify(respJson) + "\n", DESKTOP);
+      }
+      else if (userStatus.type == BROWSER)
+      {
+        userStatus.socket.emit("chat message", msg);
       }
     });
 
