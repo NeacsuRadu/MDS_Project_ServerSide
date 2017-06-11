@@ -118,7 +118,7 @@ io.on('connection', function(socket){
 
   socket.on('chat message', function(msg){
 
-
+	console.log("Mesajul de la browser este" + JSON.stringify(msg)); 
 
     messagesManager.addMessages([msg],function(err,res){
 
@@ -405,12 +405,7 @@ app.get("/decline/:name",authenticatedOrNot,function(req,resp){
 		if(status.type == DESKTOP){
 			
 		}else if(status.type == BROWSER){
-			for(var id in connected){
-				if(connected[id]._id == name){
-					connected[id].socket.emit("user decline",connected[req.sessionID]._id);
-				}
-			}
-			
+			status.socket.emit("user decline",connected[req.sessionID]._id);
 		}
 
 
@@ -728,13 +723,18 @@ net.createServer(function (socket){
 			}
 		}
 		else if (type == SEND_MESSAGE)
-		{
+		{		
 			var username_from = json.data.from;
 			var username_to = json.data.to;
 			var message = json.data.message;
 
+			json.data.date = new Date();
+			console.log("Mesajul de la desktop este " + JSON.stringify(json));
+			
 			console.log("Sending message from: " + username_from + " to: " + username_to + " message: " + message);
 
+			messagesManager.addMessages([json.data], function(err, res){} );
+			
 			var userStatus = isOnline(username_to);
 			if (userStatus.type == DESKTOP)
 			{
@@ -743,7 +743,7 @@ net.createServer(function (socket){
 			}
 			else if (userStatus.type == BROWSER)
 			{
-
+				userStatus.socket.emit("chat message", json.data);
 			}
 		}
 
