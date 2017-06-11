@@ -8,9 +8,14 @@
 		Login
 	<%  }%>
  </title>
+ <link rel="stylesheet"
+ href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+ integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+ crossorigin="anonymous">
 
 	<link rel="stylesheet" type="text/css" href="css/StyleLogin.css">
 	<meta name="viewport" content="width=device-width" />
+  <meta charset="UTF-8">
 
 
 </head>
@@ -21,24 +26,24 @@
 	<div id="everything">
 		<div id = "error">
 
-			<% if (m.length > 0) { %>
-				<%= m %>
-				<br>
-			<% } %>
+
 
 		</div>
 		<form action = "/login" method = "post" id = "log">
-			<div>
-			 <label>Username:</label><br>
-			 <input type = "text" name = "username"/>
-			</div>
-			<div>
-			 <label>Password:</label><br>
-			 <input type = "password" name = "password" id = "pw"/>
-			</div>
-			<div>
-			 <input type = "submit" id="button" value = "Log In" />
-			</div>
+      <div class="form-group" id = "userF">
+        <label class="control-label" for="username">Username</label>
+        <input type="text" class="form-control" name = "username" id="username" >
+      </div>
+      <div class="form-group" id = "userP">
+        <label class="control-label"  for="password">Password</label>
+        <input type="password" class="form-control" name = "password" id="password">
+      </div>
+      <div class="form-group" id = "subm">
+        <input type="submit" class="form-control btn btn-primary" id="submit" value = "LogIn" aria-describedby="helpBlock6">
+        <span id="helpBlock6" class="help-block"><% if (m.length > 0) { %>
+  				<%= m %>
+  			<% } %></span>
+      </div>
 		</form>
 
 		<a href = "register">Register</a>
