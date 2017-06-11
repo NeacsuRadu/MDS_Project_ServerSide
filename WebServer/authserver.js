@@ -1,3 +1,5 @@
+
+//-----------------------------------------------webserver includes ------------
 var express = require('express'),
     cookieParser = require('cookie-parser'),
     session = require('express-session'),
@@ -24,6 +26,33 @@ var messages;
 
 
 var app = express();
+
+//-----------------------------------------------webserver includes ------------
+
+
+//-----------------------------------------------desktopserver inclused---------
+var net = require('net');
+
+var OFFLINE = 0;
+var DESKTOP = 1;
+var BROWSER = 2;
+
+var SIGNIN 						= 1;
+var REGISTER 					= 2;
+var UPDATE_FRIENDS 				= 3;
+var SEND_FRIEND_REQUEST 		= 4;
+var SEND_FRIEND_REQUEST_ANSWER 	= 5;
+var FRIEND_REQUEST 				= 6;
+var FRIEND_REQUEST_FAILED 		= 7;
+var SEND_MESSAGE 				= 8;
+var RECEIVE_MESSAGE 			= 9;
+var LOGOUT 						= 10;
+
+var desktopClients = {};
+
+
+
+//-----------------------------------------------desktopserver inclused---------
 
 //---------------------------------------database waterfall --------------------
 
@@ -82,21 +111,18 @@ io.on('connection', function(socket){
     var user = connected[socket.handshake.headers.cookie.substr(index,32)];
 
 
+    // !! Tell My friends Im gone!!!!!
 
 
-  for(var id in connected){
-    var friends = connected[id].friends;
-    for(var i = 0; i < friends.length; i++){
-      if(friends[i] == user._id){
-        connected[id].socket.emit("friend connected",friends[i]);
-      }
-    }
-  }
 
 
   socket.on('chat message', function(msg){
 
+
+
     messagesManager.addMessages([msg],function(err,res){
+
+
 
       for(var id in connected){
 
@@ -585,24 +611,7 @@ http.listen(9090);
 
 // ------------------------------------------------------------------------------
 
-var net = require('net');
 
-var OFFLINE = 0;
-var DESKTOP = 1;
-var BROWSER = 2;
-
-var SIGNIN 						= 1;
-var REGISTER 					= 2;
-var UPDATE_FRIENDS 				= 3;
-var SEND_FRIEND_REQUEST 		= 4;
-var SEND_FRIEND_REQUEST_ANSWER 	= 5;
-var FRIEND_REQUEST 				= 6;
-var FRIEND_REQUEST_FAILED 		= 7;
-var SEND_MESSAGE 				= 8;
-var RECEIVE_MESSAGE 			= 9;
-var LOGOUT 						= 10;
-
-var desktopClients = {};
 
 net.createServer(function (socket){
     socket.name = socket.remoteAddress + ":" + socket.remotePort;
@@ -667,7 +676,7 @@ net.createServer(function (socket){
 			{
 				addFriend(username_from, username_to, DESKTOP);
 				usersManager.makeFriends(username_from, username_to, function(err, res) {} );
-				
+
 				var userStatus = isOnline(username_to);
 				if (userStatus != OFFLINE)
 				{
@@ -678,9 +687,9 @@ net.createServer(function (socket){
 				var respJson = getUpdateFriendsMessage(username_to, userStatus != OFFLINE);
 				sendMessage(username_from, JSON.stringify(respJson) + "\n", DESKTOP);
 			}
-			else 
+			else
 			{
-				// nothing momentan, trebuie sa facem un pop-up sau ceva in client :) 
+				// nothing momentan, trebuie sa facem un pop-up sau ceva in client :)
 			}
 		}
 		else if (type == SEND_MESSAGE)
@@ -688,18 +697,18 @@ net.createServer(function (socket){
 			var username_from = json.data.from;
 			var username_to = json.data.to;
 			var message = json.data.message;
-			
+
 			console.log("Sending message from: " + username_from + " to: " + username_to + " message: " + message);
-			
+
 			var userStatus = isOnline(username_to);
 			if (userStatus != OFFLINE)
 			{
 				var respJson = getReceiveMessageJson(username_from, username_to, message);
 				sendMessage(username_to, JSON.stringify(respJson) + "\n", userStatus);
 			}
-			// add the message into the dataBase 
+			// add the message into the dataBase
 		}
-		
+
     });
 
     socket.on("end", function (){
@@ -718,13 +727,26 @@ net.createServer(function (socket){
 
 console.log("Server listening on 43210 port !!");
 
-function isOnline (username) // common function  
-{ 
-	if (desktopClients[username] != undefined) 
+function isOnline (username) // common function
+{
+	if (desktopClients[username] != undefined)
 	{
-		return DESKTOP;
-	}
-	return OFFLINE;
+		return {
+      type :  DESKTOP
+    };
+	}else{
+    for(var id in connected){
+      if(connected[id]._id == username){
+        return {
+          type : BROWSER,
+          socket : connected[id].socket
+        };
+      }
+    }
+  }
+	return {
+    type : OFFLINE
+  };
 }
 
 function sendMessage(username, message, type)
@@ -751,7 +773,7 @@ function addFriendRequest(username_to, username_from, type)
 	}
 }
 
-function addFriend(username, friend_username, type) 
+function addFriend(username, friend_username, type)
 {
 	if (type == DESKTOP)
 	{
@@ -759,7 +781,7 @@ function addFriend(username, friend_username, type)
 	}
 	else if (type == BROWSER)
 	{
-		
+
 	}
 }
 
@@ -859,18 +881,52 @@ function registerUser(username, password, callback)
 		});
 }
 
-function tellMyFriendsImGone(username, online)
+function tellMyFriendsImGone(username, online, type)
 {
-	var friendsArray = desktopClients[username].friends;
+  if(type == DESKTOP)
+  {
+  	var friendsArray = desktopClients[username].friends;
 
-	for (var index = 0; index < friendsArray.length; index++)
-	{
-		if (desktopClients[friendsArray[index]] != undefined)
-		{
-			var respJson = getUpdateFriendsMessage(username, online);
-			desktopClients[friendsArray[index]].socket.write(JSON.stringify(respJson) + "\n");
-		}
-	}
+  	for (var index = 0; index < friendsArray.length; index++)
+  	{
+  		if (desktopClients[friendsArray[index]] != undefined)
+  		{
+  			var respJson = getUpdateFriendsMessage(username, online);
+  			desktopClients[friendsArray[index]].socket.write(JSON.stringify(respJson) + "\n");
+  		}
+  	}
+  }else if(type == BROWSER){
+
+      var user = undefined;
+
+      /*friend connected username*/
+      for(var id in connected){
+        if(connected[id]._id == usernane){
+          user = connected[id];
+        }
+      }
+
+      if(user == undefined){
+        console.log("[ERROR]( in tell my friends im gone | type = BROWSER ) : can't find " + username);
+      }
+
+      var arrayOfFriends = user.friends;
+      for ( var index = 0; index < arrayOfFriends.length; index++ ){
+        var friend = arrayOfFriends[index];
+        var status = isOnline(friend);
+        var type = status.type;
+        if (type == DESKTOP){
+          sendMessage(friend, getUpdateFriendsMessage(username, online), DESKTOP);
+        }
+        else if (type == BROWSER){
+          if( online == true ){
+            status.socket.emit("friend connected", username);
+          }else{
+            status.socket.emit("friend disconnect", username);
+          }
+        }
+      }
+  }
 }
 
 function getUpdateFriendsMessage(username, online)
@@ -894,7 +950,7 @@ function sendFriendRequest(username_from, username_to)
 			if(resp.found == 0)
 			{
 				var userStatus = isOnline(username_from);
-				if (userStatus != OFFLINE) 
+				if (userStatus != OFFLINE)
 				{
 					respJson = getFriendRequestFailedMessage();
 					sendMessage( username_from, JSON.stringify(respJson) + "\n", userStatus);
@@ -941,9 +997,9 @@ function getReceiveMessageJson(username_from, username_to, message)
 	respData.from = username_from;
 	respData.to = username_to;
 	respData.message = message;
-	
+
 	resp.type = RECEIVE_MESSAGE;
 	resp.data = respData;
-	
+
 	return resp;
 }
