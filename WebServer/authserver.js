@@ -110,6 +110,7 @@ io.on('connection', function(socket){
 
     var user = connected[socket.handshake.headers.cookie.substr(index,32)];
 
+    user.disconnect = false;
 
     tellMyFriendsImGone(user._id, true, BROWSER);
 
@@ -122,24 +123,31 @@ io.on('connection', function(socket){
 
     messagesManager.addMessages([msg],function(err,res){
 
-
-
-      for(var id in connected){
-
-        if(connected[id]._id == msg.to){
-          connected[id].socket.emit("chat message",msg);
-
-        }
+      var userStatus = ifOnline(msg.to);
+      if (userStatus.type == DESKTOP)
+      {
+        var respJson = getReceiveMessageJson();
+        sendMessage(msg.to, JSON.stringify(respJson) + "\n", DESKTOP);
+      }
+      else if (userStatus.type == BROWSER)
+      {
+        userStatus.socket.emit("chat message", msg);
       }
     });
 
   });
 
   socket.on('disconnect', function(){
-
+  user.disconnect = true;
 	console.log("[id:]" + user._id);
-	tellMyFriendsImGone(user._id, false, BROWSER);
-	delete	connected[socket.handshake.headers.cookie.substr(index,32)];
+  setTimeout(function(){
+  	if(user.disconnect == true){
+      tellMyFriendsImGone(user._id, false, BROWSER);
+    	delete	connected[socket.handshake.headers.cookie.substr(index,32)];
+      socket.disconnect();
+    }
+  }, 1000);
+
 
     console.log('a iesit un sobolan');
   });
@@ -281,13 +289,13 @@ app.get("/friends",authenticatedOrNot,function(req,resp){
 
     for(var i = 0; i < sends.length; i++){
       obi.ob[sends[i]] = false;
-	  
+
 	  var status = isOnline(sends[i]);
-	
+
 	  if(status.type != OFFLINE){
 		  obi.ob[sends[i]] = true;
 	  }
-	 
+
     }
 
 
@@ -399,13 +407,14 @@ app.get("/decline/:name",authenticatedOrNot,function(req,resp){
           }
         });
 
-	
+
 		var status = isOnline(name);
-		
+
 		if(status.type == DESKTOP){
-			
+
 		}else if(status.type == BROWSER){
 			status.socket.emit("user decline",connected[req.sessionID]._id);
+
 		}
 
 
@@ -565,7 +574,7 @@ app.get("/logout", function(req, res){
     req.logout();
     console.log("[DELETE]")
     delete usersConnected[connected[req.sessionID]._id];
-	
+
     res.redirect("/");
 });
 //-----------------------express requests       --------------------------------
@@ -603,7 +612,7 @@ function requestExists(user2,user1){
       }
     }
   }
-  
+
   console.log(user2 + "   user 1 : " + user1);
 
   if(desktopClients[user2] != undefined){
@@ -1030,7 +1039,7 @@ function sendFriendRequest(username_from, username_to)
 				else if (userStatus.type == BROWSER)
 				{
 					addFriendRequest(username_to, username_from, userStatus.type);
-				
+
 				}
 			}
 		});
