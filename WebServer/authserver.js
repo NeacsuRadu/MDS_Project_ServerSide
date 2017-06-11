@@ -137,15 +137,9 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function(){
 
-
-    for(var id in connected){
-      var friends = connected[id].friends;
-      for(var i = 0; i < friends.length; i++){
-        if(friends[i] == user._id){
-          connected[id].socket.emit("friend disconnected",friends[i]);
-        }
-      }
-    }
+	console.log("[id:]" + user._id);
+	tellMyFriendsImGone(user._id, false, BROWSER);
+	delete	connected[socket.handshake.headers.cookie.substr(index,32)];
 
     console.log('a iesit un sobolan');
   });
@@ -287,11 +281,13 @@ app.get("/friends",authenticatedOrNot,function(req,resp){
 
     for(var i = 0; i < sends.length; i++){
       obi.ob[sends[i]] = false;
-      for(var id in connected){
-        if(connected[id]._id == sends[i]){
-          obi.ob[sends[i]] = true;
-        }
-      }
+	  
+	  var status = isOnline(sends[i]);
+	
+	  if(status.type != OFFLINE){
+		  obi.ob[sends[i]] = true;
+	  }
+	 
     }
 
 
@@ -351,33 +347,33 @@ app.get("/check/:name",function(req,res){
   })
 })
 
-app.get("/user.js", function(req,res) {
+app.get("/js/user.js", function(req,res) {
   res.sendFile(__dirname +"/views/js/user.js");
 });
 
-app.get("/login.js", function(req,res) {
+app.get("/js/login.js", function(req,res) {
   res.sendFile(__dirname +"/views/js/login.js");
 });
 
-app.get("/register.js", function(req,res) {
+app.get("/js/register.js", function(req,res) {
   res.sendFile(__dirname +"/views/js/register.js");
 });
 
-app.get("/StyleUser.css", function(req,res) {
+app.get("/css/StyleUser.css", function(req,res) {
   res.sendFile(__dirname +"/views/css/StyleUser.css");
 });
 
-app.get("/StyleRegister.css", function(req,res) {
+app.get("/css/StyleRegister.css", function(req,res) {
   res.sendFile(__dirname +"/views/css/StyleRegister.css");
 });
 
-app.get("/StyleLogin.css", function(req,res) {
+app.get("/css/StyleLogin.css", function(req,res) {
   res.sendFile(__dirname +"/views/css/StyleLogin.css");
 });
 
 
-app.get("/peisaj.jpg", function(req,res) {
-  res.sendFile(__dirname +"/views/images/peisaj.jpg");
+app.get("/css/images/peisaj.jpg", function(req,res) {
+  res.sendFile(__dirname +"/views/css/images/peisaj.jpg");
 });
 
 
@@ -403,12 +399,19 @@ app.get("/decline/:name",authenticatedOrNot,function(req,resp){
           }
         });
 
-
-        for(var id in connected){
-          if(connected[id]._id == name){
-            connected[id].socket.emit("user decline",connected[req.sessionID]._id);
-          }
-        }
+	
+		var status = isOnline(name);
+		
+		if(status.type == DESKTOP){
+			
+		}else if(status.type == BROWSER){
+			for(var id in connected){
+				if(connected[id]._id == name){
+					connected[id].socket.emit("user decline",connected[req.sessionID]._id);
+				}
+			}
+			
+		}
 
 
         resp.send({
@@ -452,6 +455,8 @@ app.get("/make/:name",authenticatedOrNot,function(req,resp){
 
         if(status.type == DESKTOP){
           addFriend(name,connected[req.sessionID]._id,DESKTOP);
+		  var respp = getUpdateFriendsMessage(connected[req.sessionID]._id, true);
+		  sendMessage(name, JSON.stringify(respp) + "\n", DESKTOP);
           con = true;
         }else if(status.type == BROWSER){
           addFriend(name,connected[req.sessionID]._id,BROWSER);
@@ -565,7 +570,7 @@ app.get("/logout", function(req, res){
     req.logout();
     console.log("[DELETE]")
     delete usersConnected[connected[req.sessionID]._id];
-
+	
     res.redirect("/");
 });
 //-----------------------express requests       --------------------------------
@@ -603,8 +608,11 @@ function requestExists(user2,user1){
       }
     }
   }
+  
+  console.log(user2 + "   user 1 : " + user1);
 
   if(desktopClients[user2] != undefined){
+	  console.log("radu suge pula");
     var reqs = desktopClients[user2].requests;
     for(var i = 0; i < reqs.length; i++){
       if(reqs[i] == user1){
@@ -711,7 +719,7 @@ net.createServer(function (socket){
 				var userStatus = isOnline(username_to);
 				if (userStatus.type == DESKTOP)
 				{
-
+					console.log("user declined : " + username_from);
 				}
 				else if (userStatus.type == BROWSER)
 				{
@@ -852,7 +860,8 @@ function checkCredentials(username, password, socket, callback)
 				{
 					var friend = {};
 					friend.username = friendsArray[index];
-					if (desktopClients[friendsArray[index]] != undefined)
+					var userStatus = isOnline(friend.username);
+					if (userStatus.type != OFFLINE)
 					{
 						friend.online = true;
 					}
@@ -937,11 +946,12 @@ function tellMyFriendsImGone(username, online, type)
 		{
 			if( online == true )
 			{
-				status.socket.emit("friend connected", username);
+				console.log("online " + username);
+				userStatus.socket.emit("friend connected", username);
 			}
 			else
 			{
-				status.socket.emit("friend disconnect", username);
+				userStatus.socket.emit("friend disconnected", username);
 			}
 		}
   	}
@@ -951,11 +961,11 @@ function tellMyFriendsImGone(username, online, type)
 
       /*friend connected username*/
       for(var id in connected){
-        if(connected[id]._id == username){
+        console.log(connected[id]._id + "...." +username);
+		if(connected[id]._id == username){
           user = connected[id];
         }
       }
-
       if(user == undefined){
         console.log("[ERROR]( in tell my friends im gone | type = BROWSER ) : can't find " + username);
       }
@@ -966,7 +976,7 @@ function tellMyFriendsImGone(username, online, type)
         var status = isOnline(friend);
         var type = status.type;
         if (type == DESKTOP){
-          sendMessage(friend, getUpdateFriendsMessage(username, online), DESKTOP);
+          sendMessage(friend, JSON.stringify(getUpdateFriendsMessage(username, online)) + '\n', DESKTOP);
         }
         else if (type == BROWSER){
           if( online == true ){
@@ -1014,12 +1024,13 @@ function sendFriendRequest(username_from, username_to)
 				if (userStatus.type == DESKTOP)
 				{
 					respJson = getFriendRequestMessage(username_from);
-					addFriendRequest(username_to, username_from, userStatus);
-					sendMessage(username_to, JSON.stringify(respJson) + "\n", userStatus);
+					addFriendRequest(username_to, username_from, userStatus.type);
+					sendMessage(username_to, JSON.stringify(respJson) + "\n", userStatus.type);
 				}
 				else if (userStatus.type == BROWSER)
 				{
-					userStatus.socket.emit("new request", username_from);
+					addFriendRequest(username_to, username_from, userStatus.type);
+				
 				}
 			}
 		});
