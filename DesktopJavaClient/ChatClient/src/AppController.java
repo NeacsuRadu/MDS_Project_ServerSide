@@ -8,6 +8,7 @@ import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -98,6 +99,11 @@ public class AppController
             }
             group.getChildren().add(circle);
             Label label = new Label();
+            label.setOnMouseClicked((event) -> 
+            {               
+                String username_to = label.getText();
+                mainController.openWindowOrSetFocus(username_to);
+            });
             label.setText(friends.get(i).getUsername());
             label.setLayoutX(14);
             label.setLayoutY(-4);
@@ -105,6 +111,11 @@ public class AppController
 
             mainListView.getItems().add(pane);
         }
+    }
+    
+    public String getUsername()
+    {
+        return userData.getUsername();
     }
     
     public void signInSucceeded(UserData userData, ArrayList<Friend> friends, ArrayList<String> friendRequests)

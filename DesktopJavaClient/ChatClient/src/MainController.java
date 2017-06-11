@@ -40,5 +40,6 @@ public interface MainController
     public void messageReceived(String username_from, String message);
     
     public void openWindowOrSetFocus(String username);
+    public void removeWindow(String username);
     public String getUsername();
 }

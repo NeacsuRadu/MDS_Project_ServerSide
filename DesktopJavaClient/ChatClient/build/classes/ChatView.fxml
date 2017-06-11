@@ -9,7 +9,7 @@
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
          <children>
-            <TextArea fx:id="chatHistory" layoutX="-3.0" prefHeight="265.0" prefWidth="515.0" />
+            <TextArea layoutX="-3.0" prefHeight="265.0" prefWidth="515.0" />
          </children></AnchorPane>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
          <children>
