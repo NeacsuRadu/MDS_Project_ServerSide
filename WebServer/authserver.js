@@ -642,9 +642,11 @@ net.createServer(function (socket){
 			console.log("logout");
 			var username = json.data.username;
 
-			tellMyFriendsImGone(username, false);
-
-			delete desktopClients[username];
+			if (desktopClients[username] != undefined)
+			{
+				tellMyFriendsImGone(username, false);
+				delete desktopClients[username];
+			}
 		}
 		else if (type == SEND_FRIEND_REQUEST)
 		{
@@ -669,18 +671,31 @@ net.createServer(function (socket){
 				usersManager.makeFriends(username_from, username_to, function(err, res) {} );
 				
 				var userStatus = isOnline(username_to);
-				if (userStatus != OFFLINE)
+				if (userStatus.type == DESKTOP)
 				{
-					addFriend(username_to, username_from, userStatus);
+					addFriend(username_to, username_from, userStatus.type);
 					var respJson = getUpdateFriendsMessage(username_from, true);
 					sendMessage(username_to, JSON.stringify(respJson) + "\n", userStatus);
+				}
+				else if (userStatus.type == BROWSER)
+				{
+					addFriend(username_to, username_from, userStatus.type);
+					userStatus.socket.emit("user accept", username_from);
 				}
 				var respJson = getUpdateFriendsMessage(username_to, userStatus != OFFLINE);
 				sendMessage(username_from, JSON.stringify(respJson) + "\n", DESKTOP);
 			}
 			else 
 			{
-				// nothing momentan, trebuie sa facem un pop-up sau ceva in client :) 
+				var userStatus = isOnline(username_to);
+				if (userStatus.type == DESKTOP)
+				{
+					
+				}
+				else if (userStatus.type == BROWSER)
+				{
+					userStatus.socket.emit("user decline", username_from);
+				}
 			}
 		}
 		else if (type == SEND_MESSAGE)
@@ -692,10 +707,14 @@ net.createServer(function (socket){
 			console.log("Sending message from: " + username_from + " to: " + username_to + " message: " + message);
 			
 			var userStatus = isOnline(username_to);
-			if (userStatus != OFFLINE)
+			if (userStatus.type == DESKTOP)
 			{
 				var respJson = getReceiveMessageJson(username_from, username_to, message);
 				sendMessage(username_to, JSON.stringify(respJson) + "\n", userStatus);
+			}
+			else if (userStatus.type == BROWSER)
+			{
+			
 			}
 			// add the message into the dataBase 
 		}
@@ -725,7 +744,7 @@ function isOnline (username) // common function
 		return DESKTOP;
 	}
 	return OFFLINE;
-}
+}	
 
 function sendMessage(username, message, type)
 {
@@ -873,10 +892,11 @@ function tellMyFriendsImGone(username, online)
 	}
 }
 
-function getUpdateFriendsMessage(username, online)
+function getUpdateFriendsMessage(username, online, type)
 {
 	var resp = {};
 	var respData = {};
+	
 	respData.username = username;
 	respData.online = online;
 
@@ -894,7 +914,7 @@ function sendFriendRequest(username_from, username_to)
 			if(resp.found == 0)
 			{
 				var userStatus = isOnline(username_from);
-				if (userStatus != OFFLINE) 
+				if (userStatus.type == DESKTOP) 
 				{
 					respJson = getFriendRequestFailedMessage();
 					sendMessage( username_from, JSON.stringify(respJson) + "\n", userStatus);
@@ -904,11 +924,15 @@ function sendFriendRequest(username_from, username_to)
 			{
 				usersManager.addRequest(username_to, username_from, function(err, res){});
 				var userStatus = isOnline(username_to);
-				if (userStatus != OFFLINE)
+				if (userStatus.type == DESKTOP)
 				{
 					respJson = getFriendRequestMessage(username_from);
 					addFriendRequest(username_to, username_from, userStatus);
 					sendMessage(username_to, JSON.stringify(respJson) + "\n", userStatus);
+				}
+				else if (userStatus.type == BROWSER)
+				{
+					userStatus.socket.emit("new request", username_from);
 				}
 			}
 		});
