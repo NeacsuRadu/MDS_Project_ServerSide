@@ -119,7 +119,7 @@ io.on('connection', function(socket){
 
   socket.on('chat message', function(msg){
 
-	console.log("Mesajul de la browser este" + JSON.stringify(msg)); 
+	console.log("Mesajul de la browser este" + JSON.stringify(msg));
 
     messagesManager.addMessages([msg],function(err,res){
 
@@ -507,6 +507,8 @@ res.sendFile(__dirname + '/images/green.png');
 
 app.post("/register",function(req,res){
     var us = {};
+    console.log("body");
+    console.log(req.body);
     us.name = req.body.username;
     us.pw = req.body.password;
     console.log("pw");
@@ -555,7 +557,7 @@ app.post("/login", passport.authenticate('local',{
     successRedirect: "/",
     failureRedirect : "/",
     succesFlash : { message :  "Welcome!" },
-    failureFlash : true
+    failureFlash : { message : "Incorrect credentials" }
 }));
 
 app.get("/ejs.js", function(req,res){
@@ -589,7 +591,9 @@ function authenticatedOrNot(req, res, next){
     var error = req.flash("error");
     var form  = '';
     if(error && error.length) {
-      form = error[0] + form;
+      form = "Incorrect credentials!";
+      console.log("{form} " + form);
+      console.log(error);
     }
 
     res.render(__dirname +"/views/login.ejs",{m : form});
@@ -732,18 +736,18 @@ net.createServer(function (socket){
 			}
 		}
 		else if (type == SEND_MESSAGE)
-		{		
+		{
 			var username_from = json.data.from;
 			var username_to = json.data.to;
 			var message = json.data.message;
 
 			json.data.date = new Date();
 			console.log("Mesajul de la desktop este " + JSON.stringify(json));
-			
+
 			console.log("Sending message from: " + username_from + " to: " + username_to + " message: " + message);
 
 			messagesManager.addMessages([json.data], function(err, res){} );
-			
+
 			var userStatus = isOnline(username_to);
 			if (userStatus.type == DESKTOP)
 			{

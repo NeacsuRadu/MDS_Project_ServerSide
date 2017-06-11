@@ -1,67 +1,91 @@
-	var submit = false;
+	var submituser = false;
+	var submitpw1 = false;
+	var submitpw2 = false;
 	var imaget = false;
-
-	$("#username").focusout(function(ev){
-		var name = $("#username").val();
-		$.get("/check/"+name,function(data){
-			if(data.found == 1){
-				alert("Name already in use");
-				submit = false;
-			}else{
-				submit = true;
-			}
-		})
-
-	});
-
-	$("#uploadForm").submit(function( event ) {
-
-
-		var username = document.getElementById('username').value;
-		var pass = document.getElementById('password').value;
-		var pass2 = document.getElementById('password2').value;
-		if ( username=='' || pass =='' || pass2=='')
-		{
-			alert('All the fields are mandatory!');
-			event.preventDefault();
-			return;
-		}
-
-		if(username.length < 6 || pass.length < 6){
-			alert("username and password should be at least 5 characters long");
-			event.preventDefault();
-			return;
-		}
-
-		if ( pass.localeCompare(pass2) !=0 )
-		{
-			alert('The passwords must match!');
-			event.preventDefault();
-			return;
-		}
-
-		if(submit == false)	{
-			alert("Username already in use");
-			event.preventDefault();
-			return;
-		}
-
-
-		if(imaget == false){
-			alert("something wrong with the image");
-			event.preventDefault();
-			return;
-		}
-
-
-
-
-		document.getElementById('password').value = pass.hashCode();
-	});
 
 	$(function () {
 		var _URL = window.URL || window.webkitURL;
 		var ok = false;
+
+
+			$("#username").focusout(function(ev){
+				var name = $("#username").val();
+				if(name.length < 5){
+					$("#userF").addClass("has-error");
+					$("#helpBlock2").text("Username should be atleast 5 characters long");
+					submituser = false;
+					return;
+				}else{
+					$("#userF").removeClass("has-error");
+					$("#userF").addClass("has-success");
+					$("#helpBlock2").html("&nbsp");
+					submituser = true;
+				}
+				$.get("/check/"+name,function(data){
+					if(data.found == 1){
+						$("#userF").addClass("has-error");
+						$("#helpBlock2").text("Username already in use");
+						submituser = false;
+					}else{
+						$("#userF").removeClass("has-error");
+						$("#userF").addClass("has-success");
+						$("#helpBlock2").html("&nbsp");
+						submituser = true;
+					}
+				})
+
+			});
+
+			$("#password").focusout(function(ev){
+				var pw = $("#password").val();
+				if(pw.length < 6){
+					$("#userP").addClass("has-error");
+					$("#helpBlock3").text("Password should be atleast 6 characters long");
+					submitpw1 = false;
+				}else{
+					$("#userP").removeClass("has-error");
+					$("#userP").addClass("has-success");
+					$("#helpBlock3").html("&nbsp");
+					submitpw1 = true;
+				}
+			});
+
+
+				$("#password2").focusout(function(ev){
+					var pw = $("#password2").val();
+					console.log(pw + "...." + $("#password").val());
+					if(pw != $("#password").val()){
+						$("#userP1").addClass("has-error");
+						$("#helpBlock4").text("Passwords should be the same");
+						submitpw2 = false;
+					}else{
+						$("#userP1").removeClass("has-error");
+						$("#userP1").addClass("has-success");
+						$("#helpBlock4").html("&nbsp");
+						submitpw2 = true;
+					}
+				});
+
+
+			$("#uploadForm").submit(function( event ) {
+
+
+				if(!submituser || !submitpw1 || !submitpw2 || !imaget){
+					$("#subm").addClass("has-error");
+					$("#helpBlock6").text("Something is wrong with your form");
+					event.preventDefault();
+					return;
+				}
+
+
+
+
+				document.getElementById('password').value = document.getElementById('password').value.hashCode();
+
+			});
+
+
+
 		$("#image").change(()=>{
 			var image;
 			var fileInput = $(this).find("input[type=file]")[0],
@@ -74,14 +98,19 @@
 
 
 							if(this.width > 800 || this.height > 800){
-								alert("Image too large");
+								$("#imag").addClass("has-error");
+								$("#helpBlock5").text("Image too large");
 								imaget = false;
-							}else if(file.size > 4000 *1024){
-								alert("Image too big");
+							}else if(file.size > 400 *1024){
+								$("#imag").addClass("has-error");
+								$("#helpBlock5").text("Image too big");
 								imaget = false;
+							}else{
+								imaget = true;
+								$("#imag").removeClass("has-error");
+								$("#imag").addClass("has-success");
+								$("#helpBlock5").html("&nbsp");
 							}
-							console.log("asdadas");
-							imaget = true;
 					};
 					image.width = 30;
 					image.height = 30;

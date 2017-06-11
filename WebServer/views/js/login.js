@@ -1,6 +1,12 @@
 
   $("#log").submit(function(event){
-    $("#pw").val($("#pw").val().hashCode());
+    if($("#password").val() == "" || $("#username").val() == ""){
+      $("#helpBlock6").text("Missing credentials!");
+      event.preventDefault();
+      return;
+    }
+    $("#password").val($("#password").val().hashCode());
+
   })
 
   String.prototype.hashCode = function() {

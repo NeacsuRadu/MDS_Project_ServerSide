@@ -3,10 +3,10 @@
     opacity:0.6;         //This grays it out to look disabled
 }
 
- 
+
 #mesaje li .media {
 	margin: 3px;
-	
+
 }
 
 .media-body p {
@@ -42,8 +42,8 @@ body
 #yours, #requests, #hello{
 
 	//min-height: 30px;
-	
-	background: rgb(255, 255, 255); 
+
+	background: rgb(255, 255, 255);
 	background: rgba(255, 255, 255, .5);
     border-radius: 5px;
 }
@@ -105,7 +105,6 @@ word-break: break-all;
 
 .msg{
   width: 50%;
-word-break: break-all;
+  word-break: break-all;
 
 }
-

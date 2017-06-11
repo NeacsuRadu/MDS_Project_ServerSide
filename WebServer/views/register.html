@@ -3,9 +3,15 @@
 	<head>
 		<title> Register
 		</title>
+		<link rel="stylesheet"
+		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+		integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+		crossorigin="anonymous">
 		<link rel="stylesheet" type="text/css" href="css/StyleRegister.css">
 		<meta name="viewport" content="width=device-width" />
-		
+		<meta charset="UTF-8">
+
+
 
 	</head>
 	<body>
@@ -15,30 +21,38 @@
 					action='/register'
 					method='post'
 					encType="multipart/form-data">
-				<div class="idk">
-					<label>Username:</label><br>
-					<input type = "text"  id = "username" name = "username"/>
-				</div>
-				<div class="idk">
-					<label>Password:</label><br>
-					<input type = "password"  id = "password" name = "password"/>
-				</div>
-				<div class="idk">
-					<label>Confirm password:</label><br>
-					<input type = "password"  id = "password2" name = "password2"/>
+
+					<div class="form-group" id = "userF">
+					  <label class="control-label" for="username">Username</label>
+					  <input type="text" class="form-control" id="username" name="username" aria-describedby="helpBlock2">
+					  <span id="helpBlock2" class="help-block">&nbsp;</span>
+					</div>
+					<div class="form-group" id = "userP">
+						<label class="control-label" for="password">Password</label>
+						<input type="password" class="form-control" id="password" name = "password" aria-describedby="helpBlock3">
+						<span id="helpBlock3" class="help-block">&nbsp;</span>
+					</div>
+					<div class="form-group" id = "userP1">
+						<label class="control-label" for="password2">Retype Password</label>
+						<input type="password" class="form-control" id="password2" aria-describedby="helpBlock4">
+						<span id="helpBlock4" class="help-block">&nbsp;</span>
+					</div>
+
+
+				<div class="form-group" id = "imag">
+					<label class="control-label" for="image">Image</label>
+					<input type="file"  id="image" aria-describedby="helpBlock5">
+					<span id="helpBlock5" class="help-block">&nbsp;</span>
+					<div id="img">
+						&nbsp;
+					</div>
+					<br>
 				</div>
 
-				<div id="img">
-
+				<div class="form-group" id = "subm">
+					<input type="submit" class="form-control btn btn-primary" id="submit" value = "register" aria-describedby="helpBlock6">
+					<span id="helpBlock6" class="help-block">&nbsp;</span>
 				</div>
-	
-
-				<div class="idk">
-					<label>Picture:</label>
-					<input type = "file"  id = "image" name = "image"/>
-					<p id = "fin"></p>
-				</div>
-				<input type = "submit" id="button" value = "register" />
 
 			</form>
 		</div>

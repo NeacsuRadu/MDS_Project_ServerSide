@@ -7,25 +7,47 @@ body
 
 }
 
+.help-block{
+	font-size: 0.6em;
+	margin:0;
+	padding : 0 ;
+}
+
+
+#image{
+	width: 25%;
+	margin : auto;
+}
+
+.form-control{
+	width: 50%;
+	margin : auto;
+}
+
+.form-group{
+	margin : 0;
+}
+
 #everything {
-    border-radius: 25px;
-	background: rgb(255, 255, 255); 
+  border-radius: 25px;
+	background: rgb(255, 255, 255);
 	background: rgba(255, 255, 255, .5);
-	
-	
+
+
 	width: 350px;
-	height:300px;
+	height: 30em;
+
 	text-align: center;
 	vertical-align: middle;
-	line-height: 35px;
-	
-	
-    position: absolute;
-    top:0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+
+
+
 	margin: auto;
+	margin-top: 10%;
+}
+
+div{
+	margin: 0;
 }
 
 input
@@ -35,13 +57,12 @@ input
 
 #button
 {
-	background-color: #8080ff;
-	//background-color: #006bb3;
+
 	border-color: #004d80;
 }
 
 
-@media only screen and (max-width: 500px) 
+@media only screen and (max-width: 500px)
 {
 	#everything
 	{
