@@ -121,7 +121,7 @@ io.on('connection', function(socket){
 
   socket.on('chat message', function(msg){
 
-	console.log("Mesajul de la browser este" + JSON.stringify(msg)); 
+	console.log("Mesajul de la browser este" + JSON.stringify(msg));
 	msg.date = new Date();
 
     messagesManager.addMessages([msg],function(err,res){
@@ -461,14 +461,17 @@ app.get("/make/:name",authenticatedOrNot,function(req,resp){
 
         var status = isOnline(name);
 
+        console.log("status : ");
+        console.log(status);
+
         if(status.type == DESKTOP){
           addFriend(name,connected[req.sessionID]._id,DESKTOP);
-		  var respp = getUpdateFriendsMessage(connected[req.sessionID]._id, true);
-		  sendMessage(name, JSON.stringify(respp) + "\n", DESKTOP);
+    		  var respp = getUpdateFriendsMessage(connected[req.sessionID]._id, true);
+    		  sendMessage(name, JSON.stringify(respp) + "\n", DESKTOP);
           con = true;
         }else if(status.type == BROWSER){
           addFriend(name,connected[req.sessionID]._id,BROWSER);
-          conn = true;
+          con = true;
         }
 
       }
@@ -767,9 +770,9 @@ net.createServer(function (socket){
 		{
 			var username_from = json.data.from;
 			var username_to = json.data.to;
-			
+
 			messagesManager.getMessages({to: username_to, from: username_from}, function(err, res){
-			
+
 				var arrayOfMessages = [];
 				for (var index = 0; index < res.length; index++)
 				{
@@ -779,15 +782,15 @@ net.createServer(function (socket){
 					message.message = res[index].message;
 					arrayOfMessages.push(message);
 				}
-				
+
 				var resp = {};
 				resp.type = GET_CONVERSATION;
 				resp.messages = arrayOfMessages;
 				resp.to = username_to;
-				
+
 				sendMessage(username_from, JSON.stringify(resp) + "\n", DESKTOP);
 			});
-		
+
 		}
 
     });
@@ -1118,6 +1121,6 @@ function getDeclineMessage(username)
 	var resp = {};
 	resp.type = FRIEND_REQUEST_DECLINED;
 	resp.username = username;
-	
+
 	return resp;
 }

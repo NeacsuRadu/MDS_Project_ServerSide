@@ -87,29 +87,30 @@
 		var selectedFriendIndex = -1;
 
 
-		$('#send').click(function(){
-		  //console.log($("#tts").val().length);
-		  if($('#tts').val().length == 0 || selectedFriend == undefined){
-			return;
-		  }else{
+		$('#tts').keydown(function(event){
+		  if(event.keyCode == 13){
+				  if($('#tts').val().length == 0 || selectedFriend == undefined){
+					return;
+				  }else{
 
-			$('.lm').append('<li>' +
-								'<div class="media">' +
-								'  <div class="media-body"> ' +
-								'    <p class="msgr msg">' + $("#tts").val() +'</p> ' +
-								'  </div> ' +
-								'  <div class="media-right media-top"> ' +
-								'    <img width="30" height="30" src= ' + "/pictures/" + user + ".png" + ' class="media-object" > ' +
-								'  </div> ' +
-								'</div> ' +
-							  '</li>');
-			socket.emit("chat message", {to : $('#nume').text(),
-										 from : user,
-										 message : $('#tts').val(),
-										 date : new Date()});
-			$("#tts").val("");
-      $(".lm").scrollTop(100*$('.lm').height());
-		  }
+					$('.lm').append('<li>' +
+										'<div class="media">' +
+										'  <div class="media-body"> ' +
+										'    <p class="msgr msg">' + $("#tts").val() +'</p> ' +
+										'  </div> ' +
+										'  <div class="media-right media-top"> ' +
+										'    <img width="30" height="30" src= ' + "/pictures/" + user + ".png" + ' class="media-object" > ' +
+										'  </div> ' +
+										'</div> ' +
+									  '</li>');
+					socket.emit("chat message", {to : $('#nume').text(),
+												 from : user,
+												 message : $('#tts').val(),
+												 date : new Date()});
+					$("#tts").val("");
+		      $(".lm").scrollTop(100*$('.lm').height());
+				  }
+			}
 		});
 
 
@@ -376,4 +377,3 @@
      + message + '</p>');
 
   }
-

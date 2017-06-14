@@ -79,8 +79,12 @@ body
   height: 450px;
 }
 #tts{
-  width: 85%;
   display: inline;
+}
+
+#logout{
+  margin-right: 2%;
+  color: white;
 }
 
 #send{
@@ -96,6 +100,8 @@ body
 #nume{
   height: 4em;
 }
+
+
 
 .msgr{
   float:right;
