@@ -38,6 +38,8 @@ public class Main extends Application implements MainController
     
     private ClientSocket clientSocket = null;
     
+    private boolean signedIn = false;
+    
     private HashMap<String, ChatWindow> windowsMap;
     
     @Override
@@ -52,6 +54,30 @@ public class Main extends Application implements MainController
         showSignInView();
     }
     
+    @Override 
+    public void stop()
+    {
+        if (signedIn == true)
+        {
+            sendMessage(MessageHandler.getInstance().getLogOutMessage(appController.getUsername()));
+            closeWindows();
+        }
+        clientSocket.close();
+    }
+    
+    @Override
+    public void closeWindows()
+    {
+        for (String key : windowsMap.keySet())
+        {
+            ChatWindow window = windowsMap.get(key);
+            if (window != null)
+            {
+                window.close();
+            }
+        }
+    }
+    
     public synchronized Stage getStage()
     {
         return this.primaryStage;
@@ -64,6 +90,7 @@ public class Main extends Application implements MainController
             windowsMap.get(username_from).getController().showMessage(message);
         }
     }
+    
     
     boolean initialize()
     {
@@ -246,9 +273,17 @@ public class Main extends Application implements MainController
     {
         Platform.runLater(()->
         {
+            signedIn = true;
             appController.signInSucceeded(userData, userFriends, friendRequests);
             showAppView();
         });
+    }
+    
+    @Override
+    public void logedOut()
+    {
+        closeWindows();
+        signedIn = false;
     }
     
     @Override

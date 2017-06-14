@@ -46,4 +46,7 @@ public interface MainController
     public void updateConversation(String username, ArrayList<Message> ar);
     
     public void showFriendRequestDeclinedPopup(String username);
+    
+    public void logedOut();
+    public void closeWindows();
 }

@@ -716,7 +716,7 @@ net.createServer(function (socket){
 				{
 					addFriend(username_to, username_from, userStatus.type);
 					var respJson = getUpdateFriendsMessage(username_from, true);
-					sendMessage(username_to, JSON.stringify(respJson) + "\n", userStatus);
+					sendMessage(username_to, JSON.stringify(respJson) + "\n", userStatus.type);
 				}
 				else if (userStatus.type == BROWSER)
 				{
@@ -756,7 +756,7 @@ net.createServer(function (socket){
 			if (userStatus.type == DESKTOP)
 			{
 				var respJson = getReceiveMessageJson(username_from, username_to, message);
-				sendMessage(username_to, JSON.stringify(respJson) + "\n", userStatus);
+				sendMessage(username_to, JSON.stringify(respJson) + "\n", userStatus.type);
 			}
 			else if (userStatus.type == BROWSER)
 			{

@@ -35,6 +35,11 @@ public class ChatWindow
         fxmlLoader = new FXMLLoader();
     }
     
+    public void close()
+    {
+        stage.close();
+    }
+    
     public boolean createWindow()
     {
         boolean bRes = true;

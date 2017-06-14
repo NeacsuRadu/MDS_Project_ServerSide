@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import javafx.application.Platform;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,6 +31,17 @@ public class MessageHandler
     private MessageHandler()
     {
         handlers = new ArrayList<>();
+    }
+    
+    public void aPicatServerul()
+    {
+        Platform.runLater(()->
+        {
+        for (MainController handler : handlers)
+        {
+            handler.showSignInView();
+        }
+        });
     }
     
     // ------ HANDLERS ------ // 

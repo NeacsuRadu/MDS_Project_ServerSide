@@ -61,6 +61,7 @@ public class AppController
     {
         mainController.sendMessage(MessageHandler.getInstance().getLogOutMessage(userData.getUsername()));
         mainController.showSignInView();
+        mainController.logedOut();
     }
     
     public void setMainController(MainController controller)

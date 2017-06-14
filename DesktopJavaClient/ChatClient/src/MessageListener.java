@@ -47,6 +47,7 @@ class MessageListener implements Runnable
             }
             if (message == null)
             {
+                messageHandler.aPicatServerul();
                 break;
             }
             System.out.println(message);

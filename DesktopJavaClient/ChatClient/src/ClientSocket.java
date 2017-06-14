@@ -31,6 +31,18 @@ public class ClientSocket
         messageListener.start();
     }
     
+    public void close()
+    {
+        try
+        {
+            socket.close();
+        }
+        catch(IOException ex)
+        {
+            System.out.println("Could not close the socket");
+        }
+    }
+    
     public boolean init()
     {
         boolean bRes = true;
